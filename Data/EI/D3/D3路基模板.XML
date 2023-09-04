@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 创建时间:23-03-12 10:23:13 -->
+<content>
+	<BaseAssembly version="4.00" software="Eicad"/>
+	<BreakChain string=""/>
+	<LeftPart>
+		<Part name="左行车道" type="2" w_RefEntity="否" w_express="3.95 + $JK" w_transition="线性变化" h_express="$Hs - $B * $I_L" h_transition="线性变化" LYDWidth="0.000" v_transition="线性变化">
+			<JKB zh="0.000" w="0.0000" desc=""/>
+			<JKB zh="174.641" w="0.0000" desc=""/>
+			<JKB zh="239.641" w="1.5500" desc=""/>
+			<JKB zh="320.266" w="1.5500" desc=""/>
+			<JKB zh="385.266" w="0.0000" desc=""/>
+			<JKB zh="410.370" w="0.0000" desc=""/>
+			<option color="32" compute="是" draw="是" dashed="否"/>
+			<dim_option thickness="是" start_thickness="0.600" end_thickness="0.600" dim_slope="百分数格式" dim_offsetelv="终点上方"/>
+			<inside_stone enable="否" width="0.000" height="0.000" depth="0.000"/>
+			<outside_stone enable="否" width="0.000" height="0.000" depth="0.000"/>
+		</Part>
+		<Part name="左土路肩" type="4" w_RefEntity="否" w_express="0.475" w_transition="线性变化" h_express="$Hs - $B * $I_TL" h_transition="线性变化" LYDWidth="0.000" v_transition="线性变化">
+			<option color="12" compute="是" draw="是" dashed="否"/>
+			<dim_option thickness="否" start_thickness="0.000" end_thickness="0.000" dim_slope="不标注" dim_offsetelv="终点上方"/>
+			<inside_stone enable="否" width="0.000" height="0.000" depth="0.000"/>
+			<outside_stone enable="否" width="0.000" height="0.000" depth="0.000"/>
+		</Part>
+	</LeftPart>
+	<RightPart>
+		<Part name="右硬路肩" type="3" w_RefEntity="否" w_express="1" w_transition="线性变化" h_express="$Hs - $B * $I_R" h_transition="线性变化" LYDWidth="0.000" v_transition="线性变化">
+			<option color="72" compute="是" draw="是" dashed="否"/>
+			<dim_option thickness="是" start_thickness="0.600" end_thickness="0.600" dim_slope="百分数格式" dim_offsetelv="终点上方"/>
+			<inside_stone enable="否" width="0.000" height="0.000" depth="0.000"/>
+			<outside_stone enable="否" width="0.000" height="0.000" depth="0.000"/>
+		</Part>
+		<Part name="右土路肩" type="4" w_RefEntity="否" w_express="0.475" w_transition="线性变化" h_express="$Hs - $B * $I_TR" h_transition="线性变化" LYDWidth="0.000" v_transition="线性变化">
+			<option color="82" compute="是" draw="是" dashed="否"/>
+			<dim_option thickness="否" start_thickness="0.000" end_thickness="0.000" dim_slope="不标注" dim_offsetelv="终点上方"/>
+			<inside_stone enable="否" width="0.000" height="0.000" depth="0.000"/>
+			<outside_stone enable="否" width="0.000" height="0.000" depth="0.000"/>
+		</Part>
+	</RightPart>
+</content>
