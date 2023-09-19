@@ -34,8 +34,10 @@ BeamDC = 2500 * 1e-9 * 9.806 * A
 DeckDC = 2500 * 1e-9 * 9.806 * 325 * 3100
 BarrDC = 2500 * 1e-9 * 9.806 * (2 * 345814.54 + 363302.64) / 7  # 护栏
 DW = 2400 * 1e-9 * 9.806 * (120 * 22850) / 7  # 护栏
-print(DW)
 
-print('%.3E' % Sbc)
-print('%.3E' % Stg)
-print('%.3E' % Stc)
+if __name__ == "__main__":
+    print(DW)
+
+    print('%.3E' % Sbc)
+    print('%.3E' % Stg)
+    print('%.3E' % Stc)

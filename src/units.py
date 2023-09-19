@@ -36,6 +36,10 @@ def PSI(mpa: float):
     return 1. / MPA(1.0) * mpa
 
 
+def KSI(mpa: float):
+    return PSI(mpa) * 1e-3
+
+
 def NPMM3(pcf: float):
     """
     磅每立方英尺 换算至 牛每立方毫米
