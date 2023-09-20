@@ -16,6 +16,7 @@ fci = 56.0
 gc = 2250 + 2.29 * fc
 Ec = 0.041 * 1 * gc ** 1.5 * np.sqrt(fc)
 Ep = 196e3
+Es = 205e3
 Eci = 0.041 * 1 * gc ** 1.5 * np.sqrt(fci)
 Ec_slab = 0.041 * 1 * gc ** 1.5 * np.sqrt(fc_slab)
 n = Ec_slab / Ec
