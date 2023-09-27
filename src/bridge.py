@@ -83,7 +83,7 @@ class Superstructure:
         self.result.append([ft, fb, 0])
         return s_fcpg
 
-    def Deck(self, girder, loc, sec, pre_stress: 'StressInfo', fcg, w_deck=26.52 * 1e6):
+    def Deck(self, girder, loc, sec, pre_stress: 'StressInfo', fcg, w_deck=26.52 * 1e6*1.0):
         assert sec.ydeck is None
         _no, apc, epc, _no = pre_stress.data
         L = self.spans[girder]
@@ -128,7 +128,7 @@ class Superstructure:
         self.result.append([ft, fb, fdeck])
         return s_fcpg, s_fcpg_T1
 
-    def Deck2(self, girder, loc, sec, pre_stress: 'StressInfo', T1_stress: 'StressInfo', fcg, fcg_T1, isNoCP, w_deck=26.52 * 1e6):
+    def Deck2(self, girder, loc, sec, pre_stress: 'StressInfo', T1_stress: 'StressInfo', fcg, fcg_T1, isNoCP, w_deck=26.52 * 1e6*1.0):
         if isNoCP:  # 按组合前截面计算
             _no, apc, epc, _no = pre_stress.data
             fpe_T1, apc_T1, epc_T1, _no = T1_stress.data
@@ -190,7 +190,7 @@ class Superstructure:
         return s_fcpg, s_fcpg_T1, s_fcpg_T2
 
     def DW(self, girder, loc, sec, pre_stress: 'StressInfo', T1_stress: 'StressInfo', T2_stress: 'StressInfo',
-           fcg, fcg_T1, fcg_T2, DW=26.52 * 1e6):
+           fcg, fcg_T1, fcg_T2, DW=9.22 * 1e6):
         _no, apc, _no, epc = pre_stress.data
         fpe_T1, apc_T1, _no, epc_T1 = T1_stress.data
         fpe_T2, apc_T2, _no, epc_T2 = T2_stress.data
