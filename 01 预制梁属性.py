@@ -3,9 +3,9 @@ import numpy as np
 from ezdxf.math import ConstructionLine, Vec2
 from src.units import MPA
 
-fc = 70.0
+fc = 65.0
 fc_slab = 50
-fci = 45.0
+fci = fc * 0.8
 gc = 2250 + 2.29 * fc
 Ec = 0.041 * 1 * gc ** 1.5 * np.sqrt(fc)
 Eci = 0.041 * 1 * gc ** 1.5 * np.sqrt(fci)

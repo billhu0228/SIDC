@@ -30,16 +30,16 @@ if __name__ == "__main__":
     E13EA = Superstructure([45, ] * 4, 70.0, 50.0)
     print("---------------- 跨中 ----------------")
     r1 = E13EA.check_stress(girder_n=gn, location=22.5, non_cp_sec=no_comp, cp_section=comp,
-                            pre_stressing=info_pre, post_str_1=info_T1, post_str_2=info_T2,
+                            pre_stress=info_pre, post_str_1=info_T1, post_str_2=info_T2,
                             isMiddle=True)
     print(r1)
     print("---------------- 左侧支座 ----------------")
     r1 = E13EA.check_stress(girder_n=gn, location=0.8, non_cp_sec=end_no_comp, cp_section=end_comp,
-                            pre_stressing=end_info_pre, post_str_1=end_info_T1, post_str_2=end_info_T2,
+                            pre_stress=end_info_pre, post_str_1=end_info_T1, post_str_2=end_info_T2,
                             isMiddle=False)
     print(r1)
     print("---------------- 右侧支座 ----------------")
     r1 = E13EA.check_stress(girder_n=gn, location=44.5, non_cp_sec=no_comp, cp_section=comp,
-                            pre_stressing=pier_info_pre, post_str_1=pier_info_T1, post_str_2=pier_info_T2,
+                            pre_stress=pier_info_pre, post_str_1=pier_info_T1, post_str_2=pier_info_T2,
                             isMiddle=False)
     print(r1)

@@ -3,12 +3,13 @@ def TDNProfile(ele: str, span_label: str, x0, x1):
         [8, 4, 2, 0],
         [8, 0, 4, 2],
         [6, 0, 0, 2],
+        [2, 0, 0, 0],
         [4, 0, 0, 0],
     ]
     k = ["", 'a', 'b', 'c']
     dx = [0, 1500, 3000, 4500]
     ret = ""
-    for i, y in enumerate([75, 125, 175, 1955]):
+    for i, y in enumerate([75, 125, 175, 225, 1955]):
         for j in range(4):
             num = profile[i][j]
             ddx = dx[j]
@@ -62,19 +63,24 @@ def get_vertical_val(spans, x0, zval):
 
 if __name__ == "__main__":
     txt = "*TDN-PROFILE\n"
-    # txt += TDNProfile("101to145", "A", 260, 44750)
-    # txt += TDNProfile("201to245", "B", 45250, 89750)
-    # txt += TDNProfile("301to345", "C", 90250, 134750)
-    # txt += TDNProfile("401to445", "D", 135250, 179740)
+    txt += TDNProfile("101to145", "A", 260, 44750)
+    txt += TDNProfile("201to245", "B", 45250, 89750)
+    txt += TDNProfile("301to345", "C", 90250, 134750)
+    txt += TDNProfile("401to445", "D", 135250, 179740)
 
-    all_ele = "1to6 101to145 201to245 301to345 401to445"
-
-    xx1, zz1 = get_vertical_val([44740, 45000, 45000, 44740], 260, [1750, 680, 1900])
-    xx2, zz2 = get_vertical_val([44740, 45000, 45000, 44740], 260, [1350, 560, 1780])
-    xx3, zz3 = get_vertical_val([44740, 45000, 45000, 44740], 260, [950, 440, 1460])
-    xx4, zz4 = get_vertical_val([44740, 45000, 45000, 44740], 260, [550, 320, 1340])
-    txt += post_tendon(all_ele, xx1, zz1, "T1")
-    txt += post_tendon(all_ele, xx2, zz2, "T2")
-    txt += post_tendon(all_ele, xx3, zz3, "T3")
-    txt += post_tendon(all_ele, xx4, zz4, "T4")
+    # txt = "*TDN-PROFILE\n"
+    # txt += TDNProfile("1to45", "A", 260, 44750)
+    # txt += TDNProfile("48to92", "B", 45250, 89750)
+    # txt += TDNProfile("95to139", "C", 90250, 134750)
+    # txt += TDNProfile("142to186", "D", 135250, 179750)
+    # txt += TDNProfile("189to233", "E", 180250, 224740)
+    # all_ele = "1to223"  #
+    # xx1, zz1 = get_vertical_val([44740, 45000, 45000, 45000, 44740], 260, [1750, 680, 1900])
+    # xx2, zz2 = get_vertical_val([44740, 45000, 45000, 45000, 44740], 260, [1350, 560, 1780])
+    # xx3, zz3 = get_vertical_val([44740, 45000, 45000, 45000, 44740], 260, [950, 440, 440])
+    # xx4, zz4 = get_vertical_val([44740, 45000, 45000, 45000, 44740], 260, [550, 320, 320])
+    # txt += post_tendon(all_ele, xx1, zz1, "T1")
+    # txt += post_tendon(all_ele, xx2, zz2, "T2")
+    # txt += post_tendon(all_ele, xx3, zz3, "T3")
+    # txt += post_tendon(all_ele, xx4, zz4, "T4")
     print(txt)
