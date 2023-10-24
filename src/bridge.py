@@ -55,7 +55,7 @@ class Superstructure:
         self.print_flag = pr_detail
         return
 
-    def Transfer(self, girder, loc, sec: 'GenSection', pre_stress: 'StressInfo', w_g=18.40 * 1.0e6):
+    def Transfer(self, girder, loc, sec: 'GenSection', pre_stress: 'StressInfo', w_g=18.40 * 0.9 * 1.0e6):
         fpc, apc, epc, epc_cp = pre_stress.data
         L = self.spans[girder]
         eff_mat = calculate([L, ], dForce=[0, L], moment_loc=[loc, ])
@@ -88,7 +88,7 @@ class Superstructure:
         self.result.append([ft, fb, 0])
         return s_fcpg
 
-    def Deck(self, girder, loc, sec, pre_stress: 'StressInfo', fcg, w_deck=22.7 * 1e6 * 1.05):
+    def Deck(self, girder, loc, sec, pre_stress: 'StressInfo', fcg, w_deck=23.7 * 1e6):
         assert sec.ydeck is None
         _no, apc, epc, _no = pre_stress.data
         L = self.spans[girder]
@@ -168,12 +168,16 @@ class Superstructure:
         _no, apc, _no, epc = pre_stress.data
         fpe_T1, apc_T1, _no, epc_T1 = T1_stress.data
         fpe_T2, apc_T2, _no, epc_T2 = T2_stress.data
-        dsh, dcr = self.shrink_and_creep(self.day_arr[5], self.day_arr[4], fcg, sec, apc, epc)
-        desT2 = -sec.pre_stress(-fpe_T2 * apc_T2, epc_T2, epc) / self.Ec * self.Ep
-        dpe = dsh + dcr + desT2
+
         dsh_T1, dcr_T1 = self.shrink_and_creep(self.day_arr[5], self.day_arr[4], fcg_T1, sec, apc_T1, epc_T1)
         desT2T1 = -sec.pre_stress(-fpe_T2 * apc_T2, epc_T2, epc_T1) / self.Ec * self.Ep
         dpeT1 = dsh_T1 + dcr_T1 + desT2T1
+
+        dsh, dcr = self.shrink_and_creep(self.day_arr[5], self.day_arr[4], fcg, sec, apc, epc)
+        desT2 = -sec.pre_stress(-fpe_T2 * apc_T2, epc_T2, epc) / self.Ec * self.Ep
+        desT1 = -sec.pre_stress(-dpeT1 * apc_T1, epc_T1, epc) / self.Ec * self.Ep
+        dpe = dsh + dcr + desT2 + desT1
+
         s_fcpg = sec.pre_stress(dpe * apc, epc, epc) + sec.pre_stress(-fpe_T2 * apc_T2, epc_T2, epc)
         s_fcpg_T1 = sec.pre_stress(dpeT1 * apc_T1, epc_T1, epc_T1) + sec.pre_stress(-fpe_T2 * apc_T2, epc_T2, epc_T1)
         s_fcpg_T2 = sec.pre_stress(-fpe_T2 * apc_T2, epc_T2, epc_T2)
@@ -197,7 +201,7 @@ class Superstructure:
         return s_fcpg, s_fcpg_T1, s_fcpg_T2
 
     def DW(self, girder, loc, sec, pre_stress: 'StressInfo', T1_stress: 'StressInfo', T2_stress: 'StressInfo',
-           fcg, fcg_T1, fcg_T2, DW=9.22 * 1e6):
+           fcg, fcg_T1, fcg_T2, DW=15.8 * 1e6):
         _no, apc, _no, epc = pre_stress.data
         fpe_T1, apc_T1, _no, epc_T1 = T1_stress.data
         fpe_T2, apc_T2, _no, epc_T2 = T2_stress.data

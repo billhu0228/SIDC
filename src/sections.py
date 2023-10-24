@@ -25,7 +25,7 @@ class DXFSection(object):
         self.ny = self._get_n_strip(dy)
         self.dy = self._get_dy()
         self.U = U  # 7483.1945
-        self.UC = self.U + (deck_w + deck_h) * 2 - 2 * 1260.0
+        self.UC = self.U + deck_w * 2 - 2 * 1260.0
         self.sect_data['ys'] = self._get_ys()
         self.sect_data['ws'] = self._get_ws()
         self.sect_data['dA'] = self._get_dA()
@@ -93,12 +93,16 @@ class DXFSection(object):
     def cp(self):
         b = self.deck_w
         h = self.deck_h
-        dA = np.append(self.sect_data['dA'], b * h)
-        ys = np.append(self.sect_data['ys'], self.y_max + 0.5 * h)
+        dy = [self.dy, ] * len(self.sect_data['dA']) + [100, h]
+        dy = np.array(dy)
+        dA = np.append(self.sect_data['dA'], [1260 * 100.0, b * h])
+        ys = np.append(self.sect_data['ys'], [self.y_max + 50.0, self.y_max + 100 + 0.5 * h])
+        ws = np.append(self.sect_data['ws'], [1260, b])
         cp_gc = dA.dot(ys) / sum(dA)
-        gc_change = cp_gc - self.gc()
-        cp_I = self.I(gc_change) + b * h ** 3 / 12.0 + (b * h) * (self.y_max + 0.5 * h - cp_gc) ** 2
-        return GenSection(sum(dA), self.UC, cp_I, cp_gc, self.y_max - cp_gc, self.y_max + h - cp_gc)
+        yscp = ys - cp_gc
+        dI = ws * dy ** 3 / 12.0 + dA * yscp ** 2
+        cp_I = sum(dI)
+        return GenSection(sum(dA), self.UC, cp_I, cp_gc, self.y_max - cp_gc, self.y_max + 100 + h - cp_gc)
 
     def prs(self) -> 'StressInfo':
         As = np.array([a[2] for a in self.strands])
@@ -109,7 +113,7 @@ class DXFSection(object):
         dA = np.append(self.sect_data['dA'], b * h)
         ys = np.append(self.sect_data['ys'], self.y_max + 0.5 * h)
         cp_gc = dA.dot(ys) / sum(dA)
-        return StressInfo(1860 * 0.75, sum(As), gcs - self.gc(), gcs - cp_gc)
+        return StressInfo(self.strands[0][1], sum(As), gcs - self.gc(), gcs - cp_gc)
 
     def pos(self, order: int) -> 'StressInfo':
         if order == 1:
@@ -130,19 +134,33 @@ class DXFSection(object):
     def ConsL(line):
         return ConstructionLine(Vec2(line.dxf.start), Vec2(line.dxf.end))
 
+    @staticmethod
+    def _get_fs(es):
+        fs = 195e3 * es
+        if abs(fs) > 0.9 * 1860.0:
+            return np.sign(fs) * 0.9 * 1860
+        else:
+            return fs
+
     def _N_check(self, NA, Nu, fc, epsu):
-        # As = np.array([a[2] for a in self.strands])
-        # ys = np.array([a[0] for a in self.strands])
-        # gcs = As.dot(ys) / sum(As)
         b = self.deck_w
         h = self.deck_h
-        dA = np.append(self.sect_data['dA'], b * h)
-        ys = np.append(self.sect_data['ys'], self.y_max + 0.5 * h)
+        dy = [self.dy, ] * len(self.sect_data['dA']) + [100, h]
+        dy = np.array(dy)
+        dA = np.append(self.sect_data['dA'], [1260 * 100.0, b * h])
+        ys = np.append(self.sect_data['ys'], [self.y_max + 50.0, self.y_max + 100 + 0.5 * h])
+        ws = np.append(self.sect_data['ws'], [1260, b])
         cp_gc = dA.dot(ys) / sum(dA)
+        yscp = ys - cp_gc
+        dI = ws * dy ** 3 / 12.0 + dA * yscp ** 2
+        cp_I = sum(dI)
+
         ys = ys - NA
-        a = self.y_max + h - NA
-        phi = epsu / a
-        eps = ys * phi
+        a = self.y_max + 100 + h - NA
+        if a > 0:
+            phi = epsu / -a
+        else:
+            phi = .0
         sigma = []
         for y0 in ys:
             if y0 <= 0.25 * a:
@@ -150,31 +168,102 @@ class DXFSection(object):
             else:
                 sigma.append(0.85 * fc)
         sigma = np.array(sigma)
+
+        fpu = 0.9 * 1860
+
         Aps = self.prs().data[1]
         epc = NA - (cp_gc + self.prs().data[3])
-        epsp = -epc / a * epsu
-        fpu = 0.9 * 1860
-        fps = max(epsp * 195e3, fpu)
-        N = sigma.dot(dA) + Aps * fps
-        return Nu - N
+        epsp = phi * epc
+        fps = self._get_fs(epsp)
+
+        ApsT1 = self.pos(1).data[1]
+        epcT1 = NA - (cp_gc + self.pos(1).data[3])
+        epspT1 = phi * epcT1
+        fpsT1 = self._get_fs(epspT1)
+
+        ApsT2 = self.pos(2).data[1]
+        epcT2 = NA - (cp_gc + self.pos(2).data[3])
+        epspT2 = phi * epcT2
+        fpsT2 = self._get_fs(epspT2)
+
+        N = [sigma.dot(dA), Aps * fps, ApsT1 * fpsT1, ApsT2 * fpsT2]
+        SN = sum(N)
+        return SN - Nu
 
     def get_Mn(self, Nu, fc=-65.0, epsu=-3 * 1e-3):
-        NA = bisect(self._N_check, 100, self.y_max, (Nu, fc, epsu))
-        return NA
+        NA = bisect(self._N_check, 1, 2200, (Nu, fc, epsu))
+        b = self.deck_w
+        h = self.deck_h
+        dy = [self.dy, ] * len(self.sect_data['dA']) + [100, h]
+        dy = np.array(dy)
+        dA = np.append(self.sect_data['dA'], [1260 * 100.0, b * h])
+        ys = np.append(self.sect_data['ys'], [self.y_max + 50.0, self.y_max + 100 + 0.5 * h])
+        ws = np.append(self.sect_data['ws'], [1260, b])
+        cp_gc = dA.dot(ys) / sum(dA)
+        yscp = ys - cp_gc
+        dI = ws * dy ** 3 / 12.0 + dA * yscp ** 2
+        cp_I = sum(dI)
+        ys = ys - NA
+        a = self.y_max + 100 + h - NA
+        if a > 0:
+            phi = epsu / -a
+        else:
+            phi = .0
+        sigma = []
+        for y0 in ys:
+            if y0 <= 0.25 * a:
+                sigma.append(0)
+            else:
+                sigma.append(0.85 * fc)
+        sigma = np.array(sigma)
+
+        fpu = 0.9 * 1860
+
+        Aps = self.prs().data[1]
+        epc = NA - (cp_gc + self.prs().data[3])
+        epsp = phi * epc
+        fps = self._get_fs(epsp)
+
+        ApsT1 = self.pos(1).data[1]
+        epcT1 = NA - (cp_gc + self.pos(1).data[3])
+        epspT1 = phi * epcT1
+        fpsT1 = self._get_fs(epspT1)
+
+        ApsT2 = self.pos(2).data[1]
+        epcT2 = NA - (cp_gc + self.pos(2).data[3])
+        epspT2 = phi * epcT2
+        fpsT2 = self._get_fs(epspT2)
+
+        N = [sigma.dot(dA), Aps * fps, ApsT1 * fpsT1, ApsT2 * fpsT2]
+        M = [sum(sigma * dA * -ys), Aps * fps * epc, ApsT1 * fpsT1 * epcT1, ApsT2 * fpsT2 * epcT2]
+        return sum(M)
 
 
 if __name__ == "__main__":
-    S45 = DXFSection(1, "S45", 'NU2000.dxf', 2000, 300, 3100, 7483.1945, 0.1)
-    print(2 * S45.Area() / S45.U)
-    print("%.4E" % S45.I())
+    S45 = DXFSection(1, "S45", 'NU2000.dxf', 2000, 225, 3100, 7483.1945, 0.1)
+    S45.addStrand(75, 1395, 14 * 140, )
+    S45.addStrand(125, 1395, 14 * 140, )
+    S45.addStrand(175, 1395, 8 * 140, )
+    S45.addStrand(225, 1395, 2 * 140, )
+    S45.addStrand(1955, 1395, 4 * 140, )
+    S45.addTendon(320, 1327, 1 * 12 * 140, 1)
+    S45.addTendon(440, 1327, 1 * 12 * 140, 2)
+    S45.addTendon(560, 1327, 1 * 12 * 140, 2)
+    S45.addTendon(680, 1327, 1 * 12 * 140, 2)
+    # print(S45._N_check(100, 0, -65, -3.0e-3))
+    print(S45.get_Mn(-2000e3) * 1e-6)
+    print(S45.get_Mn(0) * 1e-6)
+    print(S45.get_Mn(100) * 1e-6)
+    # print(2 * S45.Area() / S45.U)
+    # print("%.4E" % S45.I())
 
-    S45.addStrand(75, 1860 * 0.9, 8 * 140, )
-    S45.addStrand(125, 1860 * 0.9, 8 * 140, )
-    S45.addStrand(175, 1860 * 0.9, 6 * 140, )
-    S45.addStrand(225, 1860 * 0.9, 2 * 140, )
-    S45.addStrand(1955, 1860 * 0.9, 4 * 140, )
-    rr = S45.get_Mn(0)
-    print(rr)
-    m = S45.cp()
+    # S45.addStrand(75, 1860 * 0.9, 8 * 140, )
+    # S45.addStrand(125, 1860 * 0.9, 8 * 140, )
+    # S45.addStrand(175, 1860 * 0.9, 6 * 140, )
+    # S45.addStrand(225, 1860 * 0.9, 2 * 140, )
+    # S45.addStrand(1955, 1860 * 0.9, 4 * 140, )
+    # rr = S45.get_Mn(0)
+    # print(rr)
+    # m = S45.cp()
 # w = S45.get_w(1947.94)
 # print(w * 0.5)

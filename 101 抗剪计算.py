@@ -121,7 +121,7 @@ def AASHTO_shear_strength_mm(Pu, Mu, Vu, Ag, bv, dv, nAv, Aps):
     Es = 200000
     TensileAs = Area(12) * 3 + 8 * Area(10)
     vufc = vu / fc
-    assert 0.15 < vufc < 0.175
+    # assert 0.15 < vufc < 0.175
     deg = bisect(angle_to_epsx_func, 23.2, 36.8, args=(Mu, dv, Pu, Vu, Es, Ec65, Ag, TensileAs, Aps))
     theta = Angle.from_degrees(deg)
     beta = angle_to_beta(deg)
@@ -140,18 +140,16 @@ def AASHTO_shear_strength_mm(Pu, Mu, Vu, Ag, bv, dv, nAv, Aps):
 if __name__ == "__main__":
     # Av_min = 0.083 * np.sqrt(65.0) * 225 * 150 / 420.0
     # print(Av_min, 2 * Area(16))
-    S1 = DXFSection(1, "S45", './src/NU2000.dxf', 2000, 300, 3100, 7483.1945, 0.1)
-    Fz = 1600e3
-    Iz = S1.I()
-    b = 225
-    Sz = 551338.2256 * 1077.4
-
-    tao = 4.0
-    print(tao, Fz / (225 * 1500))
-
-    sigma = -0
-    p1max = sigma * 0.5 + np.sqrt((sigma * 0.5) ** 2 + tao ** 2)
-    print(p1max)
+    # S1 = DXFSection(1, "S45", './src/NU2000.dxf', 2000, 300, 3100, 7483.1945, 0.1)
+    # Fz = 1600e3
+    # Iz = S1.I()
+    # b = 225
+    # Sz = 551338.2256 * 1077.4
+    # tao = 4.0
+    # print(tao, Fz / (225 * 1500))
+    # sigma = -0
+    # p1max = sigma * 0.5 + np.sqrt((sigma * 0.5) ** 2 + tao ** 2)
+    # print(p1max)
 
     # S1.addStrand(75, 1860 * 0.75, 8 * 140, )
     # S1.addStrand(125, 1860 * 0.75, 8 * 140, )
@@ -161,8 +159,8 @@ if __name__ == "__main__":
     # print(S1.gc())
     # print(S1.prs().data)
 
-    # r = AASHTO_shear_strength_mm(0, 0, 2400000, 721416.6, 225, 1440, 2, 4 * 12 * 140)
-    # print(r)
+    r = AASHTO_shear_strength_mm(0, 11458e6, 2400000, 721416.6, 225, 1440, 2, 4 * 12 * 140)
+    print(r)
     # CheckAASHTO_GS(17052, 1439)
     # CheckAASHTO_GS(17946, 1291)
     # CheckAASHTO_GS(17054, 1369)

@@ -253,16 +253,36 @@ def get_pts(LL: 'dLine'):
 if __name__ == "__main__":
     doc = ezdxf.readfile(r".\Data\竖弯大样.dxf")
     pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % 'BT4').first
-    fs = get_fs_pl(cPline(pl.vertices()), 1860 * 0.80, 0.0015, 0.23, True)
+    fs = get_fs_pl(cPline(pl.vertices()), 0.8*1860, 0.0015, 0.23, True)
     dataX = [p.x for p in fs]
     dataY = [p.y for p in fs]
     f = interp1d(dataX, dataY)
-    print(f(0.5) - 7)
-    print(f(0.5 * 45) - 7)
-    print(f(40) - 7)
-    print(f(45) - 7)
-    print(f(3.5 * 45.0) - 7)
-    print(f(4 * 45.0) - 7)
+    for x in range(4 * 45 + 1):
+        print("%.1f,%.0f" % (4 * 45 - x, f(x)))
+
+    pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % 'AT4').first
+    fs = get_fs_pl(cPline(pl.vertices()), 1395, 0.0015, 0.23, False)
+    dataX = [p.x for p in fs]
+    dataY = [p.y for p in fs]
+    f = interp1d(dataX, dataY)
+    # for x in range(5 * 45 + 1):
+    #     print("%.1f,%.0f" % (5 * 45 - x, f(x)))
+
+
+    pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % 'CT4').first
+    fs = get_fs_pl(cPline(pl.vertices()), 1395, 0.0015, 0.23, False)
+    dataX = [p.x for p in fs]
+    dataY = [p.y for p in fs]
+    f = interp1d(dataX, dataY)
+    # for x in range(4 * 45+35 + 1):
+    #     print("%.1f,%.0f" % (x, f(x)))
+
+    # print(f(0.5) - 7)
+    # print(f(0.5 * 45) - 7)
+    # print(f(40) - 7)
+    # print(f(45) - 7)
+    # print(f(3.5 * 45.0) - 7)
+    # print(f(4 * 45.0) - 7)
     # print(f(2.5 * 45))
     # print(f(3.5 * 45))
     # print(fs.vertex_at(44.5))
