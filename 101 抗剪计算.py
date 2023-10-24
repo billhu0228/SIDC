@@ -159,7 +159,7 @@ if __name__ == "__main__":
     # print(S1.gc())
     # print(S1.prs().data)
 
-    r = AASHTO_shear_strength_mm(0, 11458e6, 2400000, 721416.6, 225, 1440, 2, 4 * 12 * 140)
+    r = AASHTO_shear_strength_mm(0, 13863e6, 3274e3, 721416.6, 225, 1440, 2, 4 * 12 * 140)
     print(r)
     # CheckAASHTO_GS(17052, 1439)
     # CheckAASHTO_GS(17946, 1291)

@@ -105,15 +105,18 @@ class DXFSection(object):
         return GenSection(sum(dA), self.UC, cp_I, cp_gc, self.y_max - cp_gc, self.y_max + 100 + h - cp_gc)
 
     def prs(self) -> 'StressInfo':
-        As = np.array([a[2] for a in self.strands])
-        ys = np.array([a[0] for a in self.strands])
-        gcs = As.dot(ys) / sum(As)
-        b = self.deck_w
-        h = self.deck_h
-        dA = np.append(self.sect_data['dA'], b * h)
-        ys = np.append(self.sect_data['ys'], self.y_max + 0.5 * h)
-        cp_gc = dA.dot(ys) / sum(dA)
-        return StressInfo(self.strands[0][1], sum(As), gcs - self.gc(), gcs - cp_gc)
+        if len(self.strands) == 0:
+            return StressInfo(0, 0, 0, 0)
+        else:
+            As = np.array([a[2] for a in self.strands])
+            ys = np.array([a[0] for a in self.strands])
+            gcs = As.dot(ys) / sum(As)
+            b = self.deck_w
+            h = self.deck_h
+            dA = np.append(self.sect_data['dA'], b * h)
+            ys = np.append(self.sect_data['ys'], self.y_max + 0.5 * h)
+            cp_gc = dA.dot(ys) / sum(dA)
+            return StressInfo(self.strands[0][1], sum(As), gcs - self.gc(), gcs - cp_gc)
 
     def pos(self, order: int) -> 'StressInfo':
         if order == 1:

@@ -4,7 +4,7 @@ from src import Superstructure
 from src.sections import DXFSection
 
 if __name__ == "__main__":
-    Bridge = Superstructure([45, ] * 4, 65.0, 50.0, pr_detail=False)
+    Bridge = Superstructure([45, ] * 4, 65.0, 50.0, pr_detail=True)
     pre_stressing = 1860 * 0.75 * 0.92
     EffW = 3100
     DeckH = 225
