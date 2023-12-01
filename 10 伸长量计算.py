@@ -251,62 +251,86 @@ def get_pts(LL: 'dLine'):
 
 
 if __name__ == "__main__":
-    doc = ezdxf.readfile(r".\Data\竖弯大样.dxf")
-    pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % 'BT4').first
-    fs = get_fs_pl(cPline(pl.vertices()), 0.8*1860, 0.0015, 0.23, True)
+    doc = ezdxf.readfile(r"C:\Users\billh\Desktop\A.dxf")
+    pl = doc.modelspace().query('LWPOLYLINE[layer=="0"]').first
+    fs = get_fs_pl(cPline(pl.vertices()), 1395, 0.0015, 0.25, False)
     dataX = [p.x for p in fs]
     dataY = [p.y for p in fs]
     f = interp1d(dataX, dataY)
-    for x in range(4 * 45 + 1):
-        print("%.1f,%.0f" % (4 * 45 - x, f(x)))
+    L = 5.75
+    num_seg = int(L / 0.01)
+    d_seg = L / num_seg
+    xs = np.linspace(d_seg * 0.5, L - d_seg * 0.5, num_seg)
+    flist = np.array([f(x) - 7.0 for x in xs])
+    Es = 197e3
+    d_list = flist / Es * d_seg
+    elong = sum(d_list) * 1e3
+    print(elong/2)
 
-    pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % 'AT4').first
-    fs = get_fs_pl(cPline(pl.vertices()), 1395, 0.0015, 0.23, False)
-    dataX = [p.x for p in fs]
-    dataY = [p.y for p in fs]
-    f = interp1d(dataX, dataY)
-    # for x in range(5 * 45 + 1):
-    #     print("%.1f,%.0f" % (5 * 45 - x, f(x)))
+#     doc = ezdxf.readfile(r".\Data\竖弯大样.dxf")
+#     for j, N in enumerate(['A', 'B', 'C']):
+#         for i in range(4):
+#             TD = N + "T%i" % (i + 1)
+#             pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % TD).first
+#             fs = get_fs_pl(cPline(pl.vertices()), 1395, 0.0015, 0.23, N == 'B')
+#             dataX = [p.x for p in fs]
+#             dataY = [p.y for p in fs]
+#             f = interp1d(dataX, dataY)
+#             L = [5 * 45, 4 * 45, 4 * 45 + 35][j]
+#             num_seg = int(L / 0.1)
+#             d_seg = L / num_seg
+#             xs = np.linspace(d_seg * 0.5, L - d_seg * 0.5, num_seg)
+#             flist = np.array([f(x) - 7.0 for x in xs])
+#             Es = 197e3
+#             d_list = flist / Es * d_seg
+#             elong = sum(d_list) * 1e3
+#             if N != 'B':
+#                 elong = 0.5 * elong
+#             print("%s 伸长量= %6.0f mm" % (TD, elong))
 
-
-    pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % 'CT4').first
-    fs = get_fs_pl(cPline(pl.vertices()), 1395, 0.0015, 0.23, False)
-    dataX = [p.x for p in fs]
-    dataY = [p.y for p in fs]
-    f = interp1d(dataX, dataY)
-    # for x in range(4 * 45+35 + 1):
-    #     print("%.1f,%.0f" % (x, f(x)))
-
-    # print(f(0.5) - 7)
-    # print(f(0.5 * 45) - 7)
-    # print(f(40) - 7)
-    # print(f(45) - 7)
-    # print(f(3.5 * 45.0) - 7)
-    # print(f(4 * 45.0) - 7)
-    # print(f(2.5 * 45))
-    # print(f(3.5 * 45))
-    # print(fs.vertex_at(44.5))
-#     for i in range(226):
-#         vv = fs.vertex_at(i)
-#         print("%.1f,%.1f" % (vv.x, vv.y))
-#         f = 1
-#     ns = [19, 19, 19, 17, ] * 3 + [12, ] * 6
-#     fts = [1.1, ] * 4 + [1.05, ] * 4 + [1.0, ] * 4 + [1.0, ] * 6
-#     TP = ['A', 'B', 'C']
-#     side = [
-#         False, True, False
-#     ]
-#     for i, t in enumerate(TP):
-#         for j in range(4):
-#             name = '%sT%i' % (t, j + 1)
-#             pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % name).first
-#             fs = get_fs_v2(cPline(pl.vertices()), 1860 * 0.75, 0.0015, 0.23, False)
-#
-#             f = 1
-#             # newLines = sorted(lines, key=attrgetter("dxf.start.x"))
-#             # pts = [get_pts(L) for L in newLines]
-#             # pts = list(chain.from_iterable(pts))
-#             # pts = list(set(pts))
-#             # pts.sort()
-#             # newClines = np.array([[a.x, a.y] for a in pts])
-#             # print(" %s 伸长量: %s mm" % (name, get_elongation(newClines, 12, side[i])))
+# $     for x in range(4 * 45 + 1):
+# $         if x != 0:
+# $
+# $         print("%.1f,%.0f" % (4 * 45 - x, f(x)))
+# $
+# $     pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % 'AT4').first
+# $     fs = get_fs_pl(cPline(pl.vertices()), 1395, 0.0015, 0.23, False)
+# $     dataX = [p.x for p in fs]
+# $     dataY = [p.y for p in fs]
+# $     f = interp1d(dataX, dataY)
+# $     # for x in range(5 * 45 + 1):
+# $     #     print("%.1f,%.0f" % (5 * 45 - x, f(x)))
+# $
+# $     pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % 'CT4').first
+# $     fs = get_fs_pl(cPline(pl.vertices()), 1395, 0.0015, 0.23, False)
+# $     dataX = [p.x for p in fs]
+# $     dataY = [p.y for p in fs]
+# $     f = interp1d(dataX, dataY)
+# $     # for x in range(4 * 45+35 + 1):
+# $     #     print("%.1f,%.0f" % (x, f(x)))
+# $
+# $ #     for i in range(226):
+# $ #         vv = fs.vertex_at(i)
+# $ #         print("%.1f,%.1f" % (vv.x, vv.y))
+# $ #         f = 1
+# $ #     ns = [19, 19, 19, 17, ] * 3 + [12, ] * 6
+# $ #     fts = [1.1, ] * 4 + [1.05, ] * 4 + [1.0, ] * 4 + [1.0, ] * 6
+# $ #     TP = ['A', 'B', 'C']
+# $ #     side = [
+# $ #         False, True, False
+# $ #     ]
+# $ #     for i, t in enumerate(TP):
+# $ #         for j in range(4):
+# $ #             name = '%sT%i' % (t, j + 1)
+# $ #             pl = doc.modelspace().query('LWPOLYLINE[layer=="%s"]' % name).first
+# $ #             fs = get_fs_v2(cPline(pl.vertices()), 1860 * 0.75, 0.0015, 0.23, False)
+# $ #
+# $ #             f = 1
+# $ #             # newLines = sorted(lines, key=attrgetter("dxf.start.x"))
+# $ #             # pts = [get_pts(L) for L in newLines]
+# $ #             # pts = list(chain.from_iterable(pts))
+# $ #             # pts = list(set(pts))
+# $ #             # pts.sort()
+# $ #             # newClines = np.array([[a.x, a.y] for a in pts])
+# $ # print(" %s 伸长量: %s mm" % ("AA", get_elongation(newClines, 12, side[i])))
+# $

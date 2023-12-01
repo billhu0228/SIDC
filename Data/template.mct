@@ -1,0 +1,623 @@
+;---------------------------------------------------------------------------
+;  MIDAS/Civil Text(MCT) File.
+;  Date : 2023/12/1
+;---------------------------------------------------------------------------
+
+*VERSION
+   8.9.5
+
+*UNIT    ; Unit System
+; FORCE, LENGTH, HEAT, TEMPER
+   N    , M, KJ, C
+
+*PROJINFO    ; Project Information
+; PROJECT, REVISION, USER, EMAIL, ADDRESS, TEL, FAX, CLIENT, TITLE, ENGINEER, EDATE       ; One Line per Data
+; CHECK1, CDATE1, CHECK2, CDATE2, CHECK3, CDATE3, APPROVE, ADATE, COMMENT                 ; One Line per Data
+   USER=bill
+   ADDRESS=HPDI
+
+*REBAR-MATL-CODE    ; Rebar Material Code
+; CONC_CODE, CONC_MDB, SRC_CODE, SRC_MDB
+ JTG04(RC), HRB335, JTG04(RC), HRB335
+
+
+
+*BNDR-GROUP    ; Boundary Group
+; NAME, AUTOTYPE
+ 临时支座, 0
+ 预制底模, 0
+ 永久支座, 0
+ 盖梁, 0
+
+*LOAD-GROUP    ; Load Group
+; NAME
+ 先张放张
+ 自重
+ 后张放张1
+ DW
+ 后张放张2
+ 湿重1
+ 湿重2
+
+*MATERIAL    ; Material
+; iMAT, TYPE, MNAME, SPHEAT, HEATCO, PLAST, TUNIT, bMASS, DAMPRATIO, [DATA1]           ; STEEL, CONC, USER
+; iMAT, TYPE, MNAME, SPHEAT, HEATCO, PLAST, TUNIT, bMASS, DAMPRATIO, [DATA2], [DATA2]  ; SRC
+; [DATA1] : 1, STANDARD, CODE/PRODUCT, DB, USEELAST, ELAST
+; [DATA1] : 2, ELAST, POISN, THERMAL, DEN, MASS
+; [DATA1] : 3, Ex, Ey, Ez, Tx, Ty, Tz, Sxy, Sxz, Syz, Pxy, Pxz, Pyz, DEN, MASS         ; Orthotropic
+; [DATA2] : 1, STANDARD, CODE/PRODUCT, DB, USEELAST, ELAST or 2, ELAST, POISN, THERMAL, DEN, MASS
+    1, CONC , C65               , 0, 0, , C, NO, 0.05, 2, 3.8837e+010,   0.2, 1.0000e-005, 25500,     0
+    2, STEEL, Strand1860        , 0, 0, , C, NO, 0.02, 1, JTG3362-18(S),            , Strand1860    , NO, 1.95e+011
+
+*TDM-TYPE    ; Time Dependent Material
+; NAME=NAME, CODE, STR, HU, VOL, AGE, CFACTA, CFACTB, TYPE, [ACI1 or ACI2]     ; CODE=ACI
+; NAME=NAME, CODE, STR, HU, MSIZE, CTYPE, AGE                                  ; CODE=CEB1990,KS,CEB1978,KSCE 2010,KCI-USD12,CEB-FIP2010
+; NAME=NAME, CODE, N1, PHI1, N2, PHI2                                          ; CODE=MEM
+; NAME=NAME, CODE, STR, HU, USS, UCS, VOL, RR, MOD                             ; CODE=PCA
+; NAME=NAME, CODE, STR, HU, VOL, UCS, VSR1, LAF, US, VSR, PST, bRCE, RR, MOD   ; CODE=COMBINED
+; NAME=NAME, CODE, STR, HTYPE, HU, MSIZE, CTYPE, AGE, CM                       ; CODE=JAPAN
+; NAME=NAME, CODE, ELAST, HU, VOL, CC, WC, AGE                                 ; CODE=JSCE
+; NAME=NAME, CODE, STR, HTYPE, HU, MSIZE, AGE                                  ; CODE=CHINA
+; NAME=NAME, CODE, STR, HU, MSIZE, BSC, AGE                                    ; CODE=JTG
+; NAME=NAME, CODE, STR, HU, VSR, AGE, bEXPOSE                                  ; CODE=AASHTO
+; NAME=NAME, CODE, STR, HU, MSIZE, AGE                                         ; CODE=INDIA(IRC:18-2000)
+; NAME=NAME, CODE, STR, HU, MSIZE, CTYPE, AGE                                  ; CODE=INDIA(IRC:112-2011)
+; NAME=NAME, CODE, STR, HU, MSIZE, CTYPE, AGE, TCode, bSILICA                  ; CODE=European
+; NAME=NAME, CODE, STR, EE(Not Use), FS, HT, DSE, DSC, AGE                     ; CODE=NZ Bridge(SP/M/022)
+; NAME=NAME, CODE, STR, HU, AGE, M, CMETH, CTYPE, CREEP, CONCT, W, MAXS, A, PZ ; CODE=Russian
+; NAME=NAME, CODE, STR, HU, MSIZE, BSC, AGE, FLYASH                            ; CODE=China(JTG3362-2018)
+; NAME=NAME, CODE, STR, EE, HT, DSC, DSCUSR, AGE                               ; CODE=Australia
+; NAME=NAME, CODE, STR, HU, MSIZE, CTYPE, AGE, DENSITY                         ; CODE=KDS-2016
+; NAME=NAME, CODE, bSSF, SSFNAME                                               ; CODE=USER(line1)
+;      CREEPFUNC1, AGE1, CREEPFUNC2, AGE2, ...                                 ; USER(from line 2)
+; [ACI1] : CURE, SLUMP, FAP, AIR, CC
+; [ACI2] : UCC, USS
+   NAME=fc65, CEB, 6.5e+007, 80, 0.192, NR, 3, 0
+
+*TDM-ELAST    ; Time Dependent Material(Comp. Strength)
+; NAME=NAME, TYPE, CODE, STRENGTH, A, B                          ; TYPE=CODE(Korean Standard, ACI)
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE                        ; TYPE=CODE(CEB-FIP, Ohzagi, KCI-USD12)
+; NAME=NAME, TYPE, CODE, STRENGTH, bUSE, [DATA]                  ; TYPE=CODE(Japan(Hydration))
+; NAME=NAME, TYPE, CODE, STRENGTH, iTYPE                         ; TYPE=CODE(Japan(Elastic))
+; NAME=NAME, TYPE, CODE, STRENGTH                                ; TYPE=CODE(INDIA(IRC:18-2000))
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE                        ; TYPE=CODE(INDIA(IRC:112-2011))
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE                        ; TYPE=CODE(European)
+; NAME=NAME, TYPE, CODE, STRENGTH,                               ; TYPE=CODE(CEB-FIP(1978))
+; NAME=NAME, TYPE, CODE, STRENGTH, TYPE, CMETH, CTYPE, MAXS, PZ  ; TYPE=CODE(Russian))
+; NAME=NAME, TYPE, CODE, STRENGTH,                               ; TYPE=CODE=Australia
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE, nAGGRE                ; TYPE=CODE(CEB-FIP 2010)
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE, DENSITY               ; TYPE=CODE(KDS 2016)
+; NAME=NAME, TYPE, SCALE                                         ; TYPE=USER(line 1)
+;      DAY1, COMP1, TENS1, ELAST1, DAY2, COMP2, ...              ;      USER(from line 2)
+; [DATA] : ( A, B, D, TSF ) or ( iCTYPE, TSF)
+   NAME=fc65, CODE, CEB-FIP(1990), 6.5e+007, 2
+
+*TDM-LINK    ; Time Dependent Material Link
+; iMAT, TDM-TYPE1(CREEP/SHRINKAGE), TDM-TYPE2(ELASTICITY)
+    1, fc65, fc65
+
+*SECT-PSCVALUE    ; PSC Value, General Section, Composite PC, Composite General
+; SECT=iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, bBU, bEQ, SNAME2(PSC VAL)   ; 1st line
+;      [STIFF1]                                                                  ; 2nd line
+;      [STIFF2]                                                                  ; 3rd line
+;      [STIFF3]                                                                  ; 4th line
+;      T1, T2, BT, HT                                                            ; 5th line(PSC)
+;      bSHEARCHK, [SCHK], [WT]                                                   ; 6th line(PSC)
+;      SW, GN, CTC, Bc, Tc, Hh, EsEc, DsDc, Ps, Pc                               ; 7th line(COMPOSITE-PC)
+;      OPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Outer Polygon(PLANE)
+;      IPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Inner Polygon(PLANE)
+;      ...
+;      IPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Inner Polygon(PLANE)
+;      VERTEX=X1, Y1, X2, Y2, ..., Xn, Yn                                        ; Vertex(General-LINE)
+;      LINE=VI1, VJ1, dTHIK1, iALIGN1                                            ; Line(General-LINE)
+;      ...
+;      LINE=VIn, VJn, dTHIKn, iALIGNn                                            ; Line(General-LINE)
+;      LOOP=COUNT1, LIX11, LIX12, ..., LIXn                                      ; Line(General-LINE)
+;      ...
+;      LOOP=COUNTn, LIXn1, LIXn2, ..., LIXnn                                     ; Line(General-LINE)
+; SECT=iSEC, TYPE, SNAME, [OFFSET2], bSD, bWE, SHAPE, iyVAR, izVAR, bEQ          ; 1st line - TAPERED
+;      [STIFF1-I]                                                                ; 2nd line
+;      [STIFF2-I]                                                                ; 3rd line
+;      [STIFF3-I]                                                                ; 4th line
+;      [STIFF1-J]                                                                ; 5th line
+;      [STIFF2-J]                                                                ; 6th line
+;      [STIFF3-J]                                                                ; 7th line
+;      T1-I, T2-I, BT-I, HT-I, T1-J, T2-J, BT-J, HT-J                            ; 8th line(PSC)
+;      bSHEARCHK, [SCHK-I], [WT-I], [SCHK-J], [WT-J]                             ; 9rd line(PSC)
+;      OPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Outer Polygon(PLANE)
+;      IPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Inner Polygon(PLANE)
+;      ...
+;      IPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Inner Polygon(PLANE)
+;      VERTEX=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                    ; Vertex(General-LINE)
+;      LINE=bI, VI1, VJ1, dTHIK1, iALIGN1                                        ; Line(General-LINE)
+;      ...
+;      LINE=bI, VIn, VJn, dTHIKn, iALIGNn                                        ; Line(General-LINE)
+;      LOOP=bI, COUNT1, LIX11, LIX12, ..., LIXn                                  ; Line(General-LINE)
+;      ...
+;      LOOP=bI, COUNTn, LIXn1, LIXn2, ..., LIXnn                                 ; Line(General-LINE)
+; SECT=iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, bBU, bEQ, BPRT              ; 1st line - COMPOSITE-GEN
+;      [PART1]                                                                   ; 2nd line
+;      [PART2]                                                                   ; 3rd line
+;      ...
+; SECT=iSEC, TYPE, SNAME, [OFFSET2], bSD, bWE, SHAPE, iyVAR, izVAR, bEQ, PARTNUM ; 1st line - COMPOSITE-GEN(TAPERED)
+;      [PART1]-I                                                                 ; 2nd line
+;      [PART2]-I                                                                 ; next lines
+;      ...
+;      [PART1]-J                                                                 ; next lines
+;      [PART2]-J                                                                 ; next lines
+;      ...
+; [OFFSET] : OFFSET, iCENT, iREF, iHORZ, HUSER, iVERT, VUSER
+; [OFFSET2]: OFFSET, iCENT, iREF, iHORZ, HUSERI, HUSERJ, iVERT, VUSERI, VUSERJ
+; [STIFF1] : AREA, ASy, ASz, Ixx, Iyy, Izz
+; [STIFF2] ; Cyp, Cym, Czp, Czm, Qyb, Qzb, PERI_OUT, PERI_IN, Cy, Cz
+; [STIFF3] ; Y1, Y2, Y3, Y4, Z1, Z2, Z3, Z4
+; [SCHK]   : Z1, Z3, bAUTO_QY1, QY1, bAUTO_QY2, QY2, bAUTO_QY3, QY3
+; [WT]     : TOR, bAUTO_SHR1, SHR1, bAUTO_SHR2, SHR2, bAUTO_SHR3, SHR3
+; [PART] : PART=part_num
+;        : [STIFF1]
+;        : [STIFF2]
+;        : [STIFF3]
+;        : [STIFF1]                                                            ; [STIFF1] of Part Sum.
+;        : [STIFF2]                                                            ; [STIFF2] of Part Sum.
+;        : [STIFF3]                                                            ; [STIFF3] of Part Sum.
+;        : OPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Outer Polygon(PLANE)
+;        : IPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Inner Polygon(PLANE)
+;        : ...
+;        : IPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Inner Polygon(PLANE)
+;        : VERTEX=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                    ; Vertex(General-LINE)
+;        : LINE=(bI-Tapered), VI1, VJ1, dTHIK1, iALIGN1                        ; Line(General-LINE)
+;        : ...
+;        : LINE=(bI-Tapered), VIn, VJn, dTHIKn, iALIGNn                        ; Line(General-LINE)
+;        : LOOP=(bI-Tapered), COUNT1, LIX11, LIX12, ..., LIXn                  ; Line(General-LINE)
+;        : ...
+;        : LOOP=(bI-Tapered), COUNTn, LIXn1, LIXn2, ..., LIXnn                 ; Line(General-LINE)
+ SECT=   1, COMPOSITE-GEN, NU2000近墩顶      , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.62914, 0.80912, -0.62659, 0.80021
+             -0.62245, 0.79193, -0.61685, 0.78455, -0.60999, 0.77833
+             -0.60209, 0.77349, -0.59344, 0.77018, -0.58433, 0.76853
+             -0.29517, 0.74338, -0.25872, 0.73677, -0.22411, 0.72355
+             -0.19254, 0.70417, -0.16508, 0.67929, -0.14268, 0.64978
+             -0.1261, 0.61665, -0.11593, 0.58103, -0.1125, 0.54414
+             -0.1125, -0.746496, -0.11557, -0.781407, -0.12468, -0.815246
+             -0.13957, -0.846974, -0.15976, -0.875617, -0.18465, -0.900295
+             -0.21346, -0.920251, -0.24531, -0.934871, -0.47179, -1.01566
+             -0.47976, -1.01931, -0.48696, -1.0243, -0.49318, -1.03047
+             -0.49823, -1.03763, -0.50195, -1.04556, -0.50423, -1.05402
+             -0.505, -1.06275, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, -1.06275, 0.50424, -1.05402
+             0.50196, -1.04556, 0.49824, -1.03763, 0.49319, -1.03047
+             0.48697, -1.0243, 0.47976, -1.01931, 0.4718, -1.01566
+             0.24531, -0.934871, 0.21346, -0.920251, 0.18465, -0.900295
+             0.15977, -0.875617, 0.13958, -0.846974, 0.12469, -0.815246
+             0.11557, -0.781407, 0.1125, -0.746496, 0.1125, 0.54414
+             0.11593, 0.58103, 0.12611, 0.61665, 0.14268, 0.64978
+             0.16508, 0.67929, 0.19254, 0.70417, 0.22412, 0.72355
+             0.25872, 0.73677, 0.29518, 0.74338, 0.58433, 0.76853
+             0.59345, 0.77018, 0.6021, 0.77349, 0.60999, 0.77833
+             0.61686, 0.78455, 0.62246, 0.79193, 0.6266, 0.80021
+             0.62915, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       1.36877, 1.51987, 0.644886, 0.432737, 0.032328, 0.919403, 0.493711
+       0.629999, 0.630001, 0.472623, 1.52738, 0, 0, 6.81, 0, 1.55, 1.52738
+       -0.630001, 0.629999, 0.484999, -0.485001, 0.472623, 0.472623, -1.52738, -1.52738
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   2, COMPOSITE-GEN, NU2000端部        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.629142, 0.80912, -0.626598, 0.80021
+             -0.622455, 0.79193, -0.616855, 0.78455, -0.60999, 0.77833
+             -0.602097, 0.77349, -0.593445, 0.77018, -0.584331, 0.76853
+             -0.505, 0.76163, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, 0.76163, 0.584332, 0.76853
+             0.593445, 0.77018, 0.602097, 0.77349, 0.60999, 0.77833
+             0.616855, 0.78455, 0.622455, 0.79193, 0.626598, 0.80021
+             0.629142, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       2.68351, 2.83461, 1.03994, 1.71973, 0.495715, 1.38226, 0.6406
+       0.63, 0.63, 0.706055, 1.29394, 0, 0, 6.81, 0, 1.55, 1.29394
+       -0.63, 0.63, 0.485, -0.485, 0.706055, 0.706055, -1.29394, -1.29394
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   3, COMPOSITE-GEN, NU2000跨中        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.62914, 0.80912, -0.62659, 0.80021
+             -0.62245, 0.79193, -0.61685, 0.78455, -0.60999, 0.77833
+             -0.60209, 0.77349, -0.59344, 0.77018, -0.58433, 0.76853
+             -0.29517, 0.74338, -0.25872, 0.73677, -0.22411, 0.72355
+             -0.19254, 0.70417, -0.16508, 0.67929, -0.14268, 0.64978
+             -0.1261, 0.61665, -0.11593, 0.58103, -0.1125, 0.54414
+             -0.1125, -0.746496, -0.11557, -0.781407, -0.12468, -0.815246
+             -0.13957, -0.846974, -0.15976, -0.875617, -0.18465, -0.900295
+             -0.21346, -0.920251, -0.24531, -0.934871, -0.47179, -1.01566
+             -0.47976, -1.01931, -0.48696, -1.0243, -0.49318, -1.03047
+             -0.49823, -1.03763, -0.50195, -1.04556, -0.50423, -1.05402
+             -0.505, -1.06275, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, -1.06275, 0.50424, -1.05402
+             0.50196, -1.04556, 0.49824, -1.03763, 0.49319, -1.03047
+             0.48697, -1.0243, 0.47976, -1.01931, 0.4718, -1.01566
+             0.24531, -0.934871, 0.21346, -0.920251, 0.18465, -0.900295
+             0.15977, -0.875617, 0.13958, -0.846974, 0.12469, -0.815246
+             0.11557, -0.781407, 0.1125, -0.746496, 0.1125, 0.54414
+             0.11593, 0.58103, 0.12611, 0.61665, 0.14268, 0.64978
+             0.16508, 0.67929, 0.19254, 0.70417, 0.22412, 0.72355
+             0.25872, 0.73677, 0.29518, 0.74338, 0.58433, 0.76853
+             0.59345, 0.77018, 0.6021, 0.77349, 0.60999, 0.77833
+             0.61686, 0.78455, 0.62246, 0.79193, 0.6266, 0.80021
+             0.62915, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       1.36877, 1.51987, 0.644886, 0.432737, 0.032328, 0.919403, 0.493711
+       0.629999, 0.630001, 0.472623, 1.52738, 0, 0, 6.81, 0, 1.55, 1.52738
+       -0.630001, 0.629999, 0.484999, -0.485001, 0.472623, 0.472623, -1.52738, -1.52738
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   4, COMPOSITE-GEN, NU2000墩顶        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.629142, 0.80912, -0.626598, 0.80021
+             -0.622455, 0.79193, -0.616855, 0.78455, -0.60999, 0.77833
+             -0.602097, 0.77349, -0.593445, 0.77018, -0.584331, 0.76853
+             -0.505, 0.76163, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, 0.76163, 0.584332, 0.76853
+             0.593445, 0.77018, 0.602097, 0.77349, 0.60999, 0.77833
+             0.616855, 0.78455, 0.622455, 0.79193, 0.626598, 0.80021
+             0.629142, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       2.68351, 2.83461, 1.03994, 1.71973, 0.495715, 1.38226, 0.6406
+       0.63, 0.63, 0.706055, 1.29394, 0, 0, 6.81, 0, 1.55, 1.29394
+       -0.63, 0.63, 0.485, -0.485, 0.706055, 0.706055, -1.29394, -1.29394
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+
+
+*SECT-COLOR
+; iSEC, W_R, W_G, W_B, HF_R, HF_G, HF_B, HE_R, HE_G, HE_B, bBLEND, FACT
+    1,   3, 111,  66,  163, 255, 160,    3, 111,  66,  NO, 0.5
+    2,   0,  66,  45,    0, 192, 128,    0,  66,  45,  NO, 0.5
+    3,  38,  57,   0,  128, 192,   0,   38,  57,   0,  NO, 0.5
+    4, 255,   0,   0,    0, 255,   0,    0,   0, 255,  NO, 0.5
+
+*COMP-GEN-SECT-PSC-DESIGN    ; Composite Section for PSC Design
+; SECT, bCompPSC, (Z1, Z2, Z3, t1, t2, t3, TotT)-I, (Z1, Z2, Z3, t1, t2, t3, TotT)-J
+     1, NO,  0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0
+     2, NO,  0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0
+     3, NO,  0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0
+     4, NO,  0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0
+
+
+*DGN-SECT-PSCVALUE    ; Design Section of PSC Value
+; SECT=iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, bBU, bEQ, SNAME2(PSC VAL)   ; 1st line
+;      [STIFF1]                                                                  ; 2nd line
+;      [STIFF2]                                                                  ; 3rd line
+;      [STIFF3]                                                                  ; 4th line
+;      T1, T2, BT, HT                                                            ; 5th line(PSC)
+;      bSHEARCHK, [SCHK], [WT]                                                   ; 6th line(PSC)
+;      SW, GN, CTC, Bc, Tc, Hh, EsEc, DsDc, Ps, Pc                               ; 7th line(COMPOSITE-PC)
+;      OPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Outer Polygon(PLANE)
+;      IPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Inner Polygon(PLANE)
+;      ...
+;      IPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Inner Polygon(PLANE)
+;      VERTEX=X1, Y1, X2, Y2, ..., Xn, Yn                                        ; Vertex(General-LINE)
+;      LINE=VI1, VJ1, dTHIK1, iALIGN1                                            ; Line(General-LINE)
+;      ...
+;      LINE=VIn, VJn, dTHIKn, iALIGNn                                            ; Line(General-LINE)
+;      LOOP=COUNT1, LIX11, LIX12, ..., LIXn                                      ; Line(General-LINE)
+;      ...
+;      LOOP=COUNTn, LIXn1, LIXn2, ..., LIXnn                                     ; Line(General-LINE)
+; SECT=iSEC, TYPE, SNAME, [OFFSET2], bSD, bWE, SHAPE, iyVAR, izVAR, bEQ          ; 1st line - TAPERED
+;      [STIFF1-I]                                                                ; 2nd line
+;      [STIFF2-I]                                                                ; 3rd line
+;      [STIFF3-I]                                                                ; 4th line
+;      [STIFF1-J]                                                                ; 5th line
+;      [STIFF2-J]                                                                ; 6th line
+;      [STIFF3-J]                                                                ; 7th line
+;      T1-I, T2-I, BT-I, HT-I, T1-J, T2-J, BT-J, HT-J                            ; 8th line(PSC)
+;      bSHEARCHK, [SCHK-I], [WT-I], [SCHK-J], [WT-J]                             ; 9rd line(PSC)
+;      OPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Outer Polygon(PLANE)
+;      IPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Inner Polygon(PLANE)
+;      ...
+;      IPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Inner Polygon(PLANE)
+;      VERTEX=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                    ; Vertex(General-LINE)
+;      LINE=bI, VI1, VJ1, dTHIK1, iALIGN1                                        ; Line(General-LINE)
+;      ...
+;      LINE=bI, VIn, VJn, dTHIKn, iALIGNn                                        ; Line(General-LINE)
+;      LOOP=bI, COUNT1, LIX11, LIX12, ..., LIXn                                  ; Line(General-LINE)
+;      ...
+;      LOOP=bI, COUNTn, LIXn1, LIXn2, ..., LIXnn                                 ; Line(General-LINE)
+; SECT=iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, bBU, bEQ, BPRT              ; 1st line - COMPOSITE-GEN
+;      [PART1]                                                                   ; 2nd line
+;      [PART2]                                                                   ; 3rd line
+;      ...
+; SECT=iSEC, TYPE, SNAME, [OFFSET2], bSD, bWE, SHAPE, iyVAR, izVAR, bEQ, PARTNUM ; 1st line - COMPOSITE-GEN(TAPERED)
+;      [PART1]-I                                                                 ; 2nd line
+;      [PART2]-I                                                                 ; next lines
+;      ...
+;      [PART1]-J                                                                 ; next lines
+;      [PART2]-J                                                                 ; next lines
+;      ...
+; [OFFSET] : OFFSET, iCENT, iREF, iHORZ, HUSER, iVERT, VUSER
+; [OFFSET2]: OFFSET, iCENT, iREF, iHORZ, HUSERI, HUSERJ, iVERT, VUSERI, VUSERJ
+; [STIFF1] : AREA, ASy, ASz, Ixx, Iyy, Izz
+; [STIFF2] ; Cyp, Cym, Czp, Czm, Qyb, Qzb, PERI_OUT, PERI_IN, Cy, Cz
+; [STIFF3] ; Y1, Y2, Y3, Y4, Z1, Z2, Z3, Z4
+; [SCHK]   : Z1, Z3, bAUTO_QY1, QY1, bAUTO_QY2, QY2, bAUTO_QY3, QY3
+; [WT]     : TOR, bAUTO_SHR1, SHR1, bAUTO_SHR2, SHR2, bAUTO_SHR3, SHR3
+; [PART] : PART=part_num
+;        : [STIFF1]
+;        : [STIFF2]
+;        : [STIFF3]
+;        : [STIFF1]                                                            ; [STIFF1] of Part Sum.
+;        : [STIFF2]                                                            ; [STIFF2] of Part Sum.
+;        : [STIFF3]                                                            ; [STIFF3] of Part Sum.
+;        : OPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Outer Polygon(PLANE)
+;        : IPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Inner Polygon(PLANE)
+;        : ...
+;        : IPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Inner Polygon(PLANE)
+;        : VERTEX=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                    ; Vertex(General-LINE)
+;        : LINE=(bI-Tapered), VI1, VJ1, dTHIK1, iALIGN1                        ; Line(General-LINE)
+;        : ...
+;        : LINE=(bI-Tapered), VIn, VJn, dTHIKn, iALIGNn                        ; Line(General-LINE)
+;        : LOOP=(bI-Tapered), COUNT1, LIX11, LIX12, ..., LIXn                  ; Line(General-LINE)
+;        : ...
+;        : LOOP=(bI-Tapered), COUNTn, LIXn1, LIXn2, ..., LIXnn                 ; Line(General-LINE)
+ SECT=   1, COMPOSITE-GEN, NU2000近墩顶      , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.62914, 0.80912, -0.62659, 0.80021
+             -0.62245, 0.79193, -0.61685, 0.78455, -0.60999, 0.77833
+             -0.60209, 0.77349, -0.59344, 0.77018, -0.58433, 0.76853
+             -0.29517, 0.74338, -0.25872, 0.73677, -0.22411, 0.72355
+             -0.19254, 0.70417, -0.16508, 0.67929, -0.14268, 0.64978
+             -0.1261, 0.61665, -0.11593, 0.58103, -0.1125, 0.54414
+             -0.1125, -0.746496, -0.11557, -0.781407, -0.12468, -0.815246
+             -0.13957, -0.846974, -0.15976, -0.875617, -0.18465, -0.900295
+             -0.21346, -0.920251, -0.24531, -0.934871, -0.47179, -1.01566
+             -0.47976, -1.01931, -0.48696, -1.0243, -0.49318, -1.03047
+             -0.49823, -1.03763, -0.50195, -1.04556, -0.50423, -1.05402
+             -0.505, -1.06275, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, -1.06275, 0.50424, -1.05402
+             0.50196, -1.04556, 0.49824, -1.03763, 0.49319, -1.03047
+             0.48697, -1.0243, 0.47976, -1.01931, 0.4718, -1.01566
+             0.24531, -0.934871, 0.21346, -0.920251, 0.18465, -0.900295
+             0.15977, -0.875617, 0.13958, -0.846974, 0.12469, -0.815246
+             0.11557, -0.781407, 0.1125, -0.746496, 0.1125, 0.54414
+             0.11593, 0.58103, 0.12611, 0.61665, 0.14268, 0.64978
+             0.16508, 0.67929, 0.19254, 0.70417, 0.22412, 0.72355
+             0.25872, 0.73677, 0.29518, 0.74338, 0.58433, 0.76853
+             0.59345, 0.77018, 0.6021, 0.77349, 0.60999, 0.77833
+             0.61686, 0.78455, 0.62246, 0.79193, 0.6266, 0.80021
+             0.62915, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       1.36877, 1.51987, 0.644886, 0.432737, 0.032328, 0.919403, 0.493711
+       0.629999, 0.630001, 0.472623, 1.52738, 0, 0, 6.81, 0, 1.55, 1.52738
+       -0.630001, 0.629999, 0.484999, -0.485001, 0.472623, 0.472623, -1.52738, -1.52738
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   2, COMPOSITE-GEN, NU2000端部        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.629142, 0.80912, -0.626598, 0.80021
+             -0.622455, 0.79193, -0.616855, 0.78455, -0.60999, 0.77833
+             -0.602097, 0.77349, -0.593445, 0.77018, -0.584331, 0.76853
+             -0.505, 0.76163, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, 0.76163, 0.584332, 0.76853
+             0.593445, 0.77018, 0.602097, 0.77349, 0.60999, 0.77833
+             0.616855, 0.78455, 0.622455, 0.79193, 0.626598, 0.80021
+             0.629142, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       2.68351, 2.83461, 1.03994, 1.71973, 0.495715, 1.38226, 0.6406
+       0.63, 0.63, 0.706055, 1.29394, 0, 0, 6.81, 0, 1.55, 1.29394
+       -0.63, 0.63, 0.485, -0.485, 0.706055, 0.706055, -1.29394, -1.29394
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   3, COMPOSITE-GEN, NU2000跨中        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.62914, 0.80912, -0.62659, 0.80021
+             -0.62245, 0.79193, -0.61685, 0.78455, -0.60999, 0.77833
+             -0.60209, 0.77349, -0.59344, 0.77018, -0.58433, 0.76853
+             -0.29517, 0.74338, -0.25872, 0.73677, -0.22411, 0.72355
+             -0.19254, 0.70417, -0.16508, 0.67929, -0.14268, 0.64978
+             -0.1261, 0.61665, -0.11593, 0.58103, -0.1125, 0.54414
+             -0.1125, -0.746496, -0.11557, -0.781407, -0.12468, -0.815246
+             -0.13957, -0.846974, -0.15976, -0.875617, -0.18465, -0.900295
+             -0.21346, -0.920251, -0.24531, -0.934871, -0.47179, -1.01566
+             -0.47976, -1.01931, -0.48696, -1.0243, -0.49318, -1.03047
+             -0.49823, -1.03763, -0.50195, -1.04556, -0.50423, -1.05402
+             -0.505, -1.06275, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, -1.06275, 0.50424, -1.05402
+             0.50196, -1.04556, 0.49824, -1.03763, 0.49319, -1.03047
+             0.48697, -1.0243, 0.47976, -1.01931, 0.4718, -1.01566
+             0.24531, -0.934871, 0.21346, -0.920251, 0.18465, -0.900295
+             0.15977, -0.875617, 0.13958, -0.846974, 0.12469, -0.815246
+             0.11557, -0.781407, 0.1125, -0.746496, 0.1125, 0.54414
+             0.11593, 0.58103, 0.12611, 0.61665, 0.14268, 0.64978
+             0.16508, 0.67929, 0.19254, 0.70417, 0.22412, 0.72355
+             0.25872, 0.73677, 0.29518, 0.74338, 0.58433, 0.76853
+             0.59345, 0.77018, 0.6021, 0.77349, 0.60999, 0.77833
+             0.61686, 0.78455, 0.62246, 0.79193, 0.6266, 0.80021
+             0.62915, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       1.36877, 1.51987, 0.644886, 0.432737, 0.032328, 0.919403, 0.493711
+       0.629999, 0.630001, 0.472623, 1.52738, 0, 0, 6.81, 0, 1.55, 1.52738
+       -0.630001, 0.629999, 0.484999, -0.485001, 0.472623, 0.472623, -1.52738, -1.52738
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   4, COMPOSITE-GEN, NU2000墩顶        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.629142, 0.80912, -0.626598, 0.80021
+             -0.622455, 0.79193, -0.616855, 0.78455, -0.60999, 0.77833
+             -0.602097, 0.77349, -0.593445, 0.77018, -0.584331, 0.76853
+             -0.505, 0.76163, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, 0.76163, 0.584332, 0.76853
+             0.593445, 0.77018, 0.602097, 0.77349, 0.60999, 0.77833
+             0.616855, 0.78455, 0.622455, 0.79193, 0.626598, 0.80021
+             0.629142, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       2.68351, 2.83461, 1.03994, 1.71973, 0.495715, 1.38226, 0.6406
+       0.63, 0.63, 0.706055, 1.29394, 0, 0, 6.81, 0, 1.55, 1.29394
+       -0.63, 0.63, 0.485, -0.485, 0.706055, 0.706055, -1.29394, -1.29394
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+
+*TENDON-GROUP    ; Tendon Group
+; NAME
+ 先张束
+ 后张束
+
+*TDN-PROPERTY    ; Tendon Property
+; NAME, TYPE, MATL, AREA, DIA, RM, RC, FF, WF, US, YS, LT, ASB, ASE, bBONDED, ALPHA, \ 
+;       bOSRF, FT, LR, FPK, ACHANGE, bRELAX, TDMFK, WobbleType, AngleDisp
+   S6, INTERNAL, 2, 0.00084, 0.0327035, 8, 5, 0, 0, 1.86326e+009, 1.56906e+009, PRE, 0, 0, YES, 0, , , ,, 0, NO, 0, 0, 0
+   S2, INTERNAL, 2, 0.00028, 0.0188814, 8, 5, 0, 0, 1.86326e+009, 1.56906e+009, PRE, 0, 0, YES, 0, , , ,, 0, NO, 0, 0, 0
+   S4, INTERNAL, 2, 0.00056, 0.0267023, 8, 5, 0, 0, 1.86326e+009, 1.56906e+009, PRE, 0, 0, YES, 0, , , ,, 0, NO, 0, 0, 0
+   S8, INTERNAL, 2, 0.00112, 0.0377628, 8, 5, 0, 0, 1.86326e+009, 1.56906e+009, PRE, 0, 0, YES, 0, , , ,, 0, NO, 0, 0, 0
+   P12, INTERNAL, 2, 0.001668, 0.08, 0, 45, 0.23, 0.0015, 1.86326e+009, 1.56906e+009, POST, 0.006, 0.006, YES, 0, , , ,, 0, YES, 1, 0, 0.005
+   P8, INTERNAL, 2, 0.00112, 0.07, 8, 5, 0.23, 0.00115, 1.86326e+009, 1.56906e+009, POST, 0.006, 0.006, YES, 0, , , ,, 0, NO, 0, 0, 0.005
+
+
+*STLDCASE    ; Static Load Cases
+; LCNAME, LCTYPE, DESC
+   自重 , CS, 
+   先张 , CS, 
+   后张 , CS, 
+   二期荷载, CS, 
+   跨中湿重, CS, 
+   墩顶湿重, CS, 
+   总体升温, USER, 
+   总体降温, USER, 
+   梯度升温, USER, 
+   梯度降温, USER, 
+   WS   , USER, 
+   WL   , USER, 
+
+
+*NL-PROP    ; General Link Property
+; NAME, APPTYPE, TYPE, TW, TWRATIO_I, bUSEMASS, TM, TMRATIO_I, bSSL, DY, DZ, SIESKEY(if APPTYPE=2), DESC
+; bLDX, DX, EFFDAMP, bNDX, [NL_PROP]
+; bLDY, DY, EFFDAMP, bNDY, [NL_PROP]
+; bLDZ, DZ, EFFDAMP, bNDZ, [NL_PROP]
+; bLRX, RX, EFFDAMP, bNRX, [NL_PROP]
+; bLRY, RY, EFFDAMP, bNRY, [NL_PROP]
+; bLRZ, RZ, EFFDAMP, bNRZ, [NL_PROP]
+; [NL_PROP] : DSTIFF, DAMP, DEXP, bRIGDBR, BSTIFF, REFV                                  ; Visco-elastic Damper Type
+; [NL_PROP] : STIFF, OPEN                                                                ; Gap Type or Hook Type
+; [NL_PROP] : STIFF, YSTR, PYS_RATIO, YEXP, PA, PB                                       ; Hysteretic System Type
+; [NL_PROP] : STIFF, YSTR, PYS_RATIO, PA, PB                                             ; Lead Rubber Bearing Type
+; [NL_PROP] : STIFF, FCS, FCF, RP, RADIUS, PA, PB                                        ; Friction Pendulum System Type
+; [NL_PROP] : SYM, STIFF(1~4), FCS(1~4), FCF(1~4), RP(1~4), RADIUS(1~4), STOPDIST(1~4)   ; Triple Friction Pendulum System Type
+  HDR720, ELEMENT, SPG,  0, 0.5, NO, 0, 0.5,  NO, 0.5, 0.5, 0, 0, 
+    YES, 5e+008, 0, NO
+    YES, 3.47e+006, 0, NO
+    YES, 3.47e+006, 0, NO
+    NO, 0, 0, NO
+    NO, 0, 0, NO
+    NO, 0, 0, NO
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+*USE-STLD, 自重
+
+*SELFWEIGHT    ; Self Weight
+; X, Y, Z, GROUP
+0, 0, -1, 自重
+
+*USE-STLD, 总体升温
+
+*SYSTEMPER    ; System Temperature
+; SYSTEMP, GROUP
+12, 
+
+; End of data for load case [总体升温] -------------------------
+
+*USE-STLD, 总体降温
+
+*SYSTEMPER    ; System Temperature
+; SYSTEMP, GROUP
+-12, 
+
+; End of data for load case [总体降温] -------------------------
+

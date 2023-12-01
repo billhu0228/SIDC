@@ -7,8 +7,13 @@ D3 = Align('D3', './Data/EI/D3')
 D4 = Align('D4', './Data/EI/D4')
 M = Align('M', './Data/EI/M')
 
-print(D1.get_coordinate(485.900))
-print(M.get_coordinate(0))
+print(D1.get_elevation(300))
+print(M.get_coordinate(97.4740, ))
+
+p = (571320.0385342, 785626.8178289)
+e1 = M.get_surface_elevation(M.get_station_by_point(*p), 10.9436)
+e2 = D4.get_surface_elevation(D4.get_station_by_point(*p), 0.0930209)
+print(e1, e2)
 
 Mst = [
     7.4740,  # R1-7
@@ -70,46 +75,58 @@ R4Station = [
 
 # ST14 = M.get_station_by_point(571395.5844493, 785597.1557535)
 # print(ST14)
-
-for st in Mst:
-    cc = Vec2(M.get_coordinate(st))
-    ddir = Vec2(M.get_direction(st))
-    ydir = ddir.rotate_deg(90)
-    left = cc + ydir * 10
-    right = cc - ydir * 10
-    print("%.8f,%.8f" % (left[0], left[1]))
-    print("%.8f,%.8f" % (cc[0], cc[1]))
-    print("%.8f,%.8f" % (right[0], right[1]))
-
-    # print("%.6f,%.6f" % (ddir[0], ddir[1]))
-print("---R1---")
-for st in R1Station:
-    cc = Vec2(D1.get_coordinate(st))
-    ddir = Vec2(D1.get_direction(st))
-    ydir = ddir.rotate_deg(90)
-    left = cc + ydir * 10
-    right = cc - ydir * 10
-    print("%.8f,%.8f" % (left[0], left[1]))
-    print("%.8f,%.8f" % (cc[0], cc[1]))
-    print("%.8f,%.8f" % (right[0], right[1]))
-print("----R2-----")
-for st in R2Station:
-    cc = Vec2(D2.get_coordinate(st))
-    ddir = Vec2(D2.get_direction(st))
-    ydir = ddir.rotate_deg(90)
-    left = cc + ydir * 10
-    right = cc - ydir * 10
-    print("%.8f,%.8f" % (left[0], left[1]))
-    print("%.8f,%.8f" % (cc[0], cc[1]))
-    print("%.8f,%.8f" % (right[0], right[1]))
-
-print("----R3-----")
-for st in R3Station:
-    cc = Vec2(D3.get_coordinate(st))
-    ddir = Vec2(D3.get_direction(st))
-    ydir = ddir.rotate_deg(90)
-    left = cc + ydir * 10
-    right = cc - ydir * 10
-    print("%.8f,%.8f" % (left[0], left[1]))
-    print("%.8f,%.8f" % (cc[0], cc[1]))
-    print("%.8f,%.8f" % (right[0], right[1]))
+# print("---M---")
+# for st in Mst:
+#     cc = Vec2(M.get_coordinate(st))
+#     ddir = Vec2(M.get_direction(st))
+#     ydir = ddir.rotate_deg(90)
+#     left = cc + ydir * 10
+#     right = cc - ydir * 10
+#     print("%.8f,%.8f" % (left[0], left[1]))
+#     print("%.8f,%.8f" % (cc[0], cc[1]))
+#     print("%.8f,%.8f" % (right[0], right[1]))
+#
+#     # print("%.6f,%.6f" % (ddir[0], ddir[1]))
+# print("---R1---")
+# for st in R1Station:
+#     cc = Vec2(D1.get_coordinate(st))
+#     ddir = Vec2(D1.get_direction(st))
+#     ydir = ddir.rotate_deg(90)
+#     left = cc + ydir * 10
+#     right = cc - ydir * 10
+#     print("%.8f,%.8f" % (left[0], left[1]))
+#     print("%.8f,%.8f" % (cc[0], cc[1]))
+#     print("%.8f,%.8f" % (right[0], right[1]))
+# print("----R2-----")
+# for st in R2Station:
+#     cc = Vec2(D2.get_coordinate(st))
+#     ddir = Vec2(D2.get_direction(st))
+#     ydir = ddir.rotate_deg(90)
+#     left = cc + ydir * 10
+#     right = cc - ydir * 10
+#     print("%.8f,%.8f" % (left[0], left[1]))
+#     print("%.8f,%.8f" % (cc[0], cc[1]))
+#     print("%.8f,%.8f" % (right[0], right[1]))
+#
+# print("----R3-----")
+# for st in R3Station:
+#     cc = Vec2(D3.get_coordinate(st))
+#     ddir = Vec2(D3.get_direction(st))
+#     ydir = ddir.rotate_deg(90)
+#     left = cc + ydir * 10
+#     right = cc - ydir * 10
+#     print("%.8f,%.8f" % (left[0], left[1]))
+#     print("%.8f,%.8f" % (cc[0], cc[1]))
+#     print("%.8f,%.8f" % (right[0], right[1]))
+#
+# print("----R4-----")
+# for st in R4Station:
+#     cc = Vec2(D4.get_coordinate(st))
+#     ddir = Vec2(D4.get_direction(st))
+#     ydir = ddir.rotate_deg(90)
+#     left = cc + ydir * 10
+#     right = cc - ydir * 10
+#     print("%.8f,%.8f" % (left[0], left[1]))
+#     print("%.8f,%.8f" % (cc[0], cc[1]))
+#     print("%.8f,%.8f" % (right[0], right[1]))
+#

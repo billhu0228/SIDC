@@ -1,3 +1,5 @@
+import numpy as np
+
 from src.sections import DXFSection
 
 if __name__ == "__main__":
@@ -16,11 +18,12 @@ if __name__ == "__main__":
     # print(S45.get_Mn(0) * 1e-6 * 0.9)
     # print(S45.get_Mn(100) * 1e-6 * 0.9)
 
-    P1 = DXFSection(1, "S45", './src/NU2000UPSET.dxf', 2000 + 325, 1, 1, 7483.1945, 0.1)
+    P1 = DXFSection(1, "S45", './src/NU2000END.dxf', 2000 + 325, 1, 1, 7483.1945, 0.1)
     P1.addTendon(325 + 100, 1327, 1 * 12 * 140, 1)
     P1.addTendon(325 + 220, 1327, 1 * 12 * 140, 2)
     P1.addTendon(325 + 540, 1327, 1 * 12 * 140, 2)
     P1.addTendon(325 + 660, 1327, 1 * 12 * 140, 2)
+    P1.addRebar(100,420,10*16*16*np.pi*0.25)
     # print(S45._N_check(100, 0, -65, -3.0e-3))
     print(P1.get_Mn(-200e3) * 1e-6 * 0.9)
     print(P1.get_Mn(0) * 1e-6 * 0.9)

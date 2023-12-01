@@ -126,7 +126,7 @@ def AASHTO_shear_strength_mm(Pu, Mu, Vu, Ag, bv, dv, nAv, Aps):
     theta = Angle.from_degrees(deg)
     beta = angle_to_beta(deg)
     Vc = 0.083 * beta * np.sqrt(fc) * bv * dv
-    s = 150
+    s = 100
     Av = nAv * 16 * 16 * 0.25 * np.pi
     Vs = (Av * 420 * dv * theta.cos() / theta.sin()) / s
     Vn = Vc + Vs
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     # print(S1.gc())
     # print(S1.prs().data)
 
-    r = AASHTO_shear_strength_mm(0, 13863e6, 3274e3, 721416.6, 225, 1440, 2, 4 * 12 * 140)
+    r = AASHTO_shear_strength_mm(0, 13900e6, 3400e3, 721416.6, 225, 1440, 2, 4 * 12 * 140)
     print(r)
     # CheckAASHTO_GS(17052, 1439)
     # CheckAASHTO_GS(17946, 1291)

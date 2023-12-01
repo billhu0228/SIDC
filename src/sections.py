@@ -18,6 +18,7 @@ class DXFSection(object):
         self.lines = [self.ConsL(li) for li in lines]
         self.arcs = [ar.construction_tool() for ar in arcs]
         self.y_max = ymax
+        self.rebar = []
         self.strands = []
         self.post_1 = []
         self.post_2 = []
@@ -41,6 +42,9 @@ class DXFSection(object):
             ret2 = [e.intersect_line(cut)[0] for e in self.arcs if len(e.intersect_line(cut)) != 0]
             ret = ret1 + ret2
         return ret[0].x * 2
+
+    def addRebar(self, z0, fy, As):
+        self.rebar.append([z0, fy, As])
 
     def addStrand(self, z0, fy, As):
         self.strands.append([z0, fy, As])
@@ -104,6 +108,17 @@ class DXFSection(object):
         cp_I = sum(dI)
         return GenSection(sum(dA), self.UC, cp_I, cp_gc, self.y_max - cp_gc, self.y_max + 100 + h - cp_gc)
 
+    def bar(self):
+        As = np.array([a[2] for a in self.rebar])
+        ys = np.array([a[0] for a in self.rebar])
+        gcs = As.dot(ys) / sum(As)
+        b = self.deck_w
+        h = self.deck_h
+        dA = np.append(self.sect_data['dA'], b * h)
+        ys = np.append(self.sect_data['ys'], self.y_max + 0.5 * h)
+        cp_gc = dA.dot(ys) / sum(dA)
+        return StressInfo(self.rebar[0][1], sum(As), gcs - self.gc(), gcs - cp_gc)
+
     def prs(self) -> 'StressInfo':
         if len(self.strands) == 0:
             return StressInfo(0, 0, 0, 0)
@@ -145,6 +160,14 @@ class DXFSection(object):
         else:
             return fs
 
+    @staticmethod
+    def _get_fy(es):
+        fs = 200e3 * es
+        if abs(fs) > 420.0:
+            return np.sign(fs) * 420.0
+        else:
+            return fs
+
     def _N_check(self, NA, Nu, fc, epsu):
         b = self.deck_w
         h = self.deck_h
@@ -173,6 +196,11 @@ class DXFSection(object):
         sigma = np.array(sigma)
 
         fpu = 0.9 * 1860
+        As = self.bar().data[1]
+        ec = NA - (cp_gc + self.bar().data[3])
+        esp = phi * ec
+        fs = self._get_fy(esp)
+
 
         Aps = self.prs().data[1]
         epc = NA - (cp_gc + self.prs().data[3])
@@ -189,7 +217,7 @@ class DXFSection(object):
         epspT2 = phi * epcT2
         fpsT2 = self._get_fs(epspT2)
 
-        N = [sigma.dot(dA), Aps * fps, ApsT1 * fpsT1, ApsT2 * fpsT2]
+        N = [sigma.dot(dA),As * fs, Aps * fps, ApsT1 * fpsT1, ApsT2 * fpsT2]
         SN = sum(N)
         return SN - Nu
 
@@ -221,6 +249,10 @@ class DXFSection(object):
         sigma = np.array(sigma)
 
         fpu = 0.9 * 1860
+        As = self.bar().data[1]
+        ec = NA - (cp_gc + self.bar().data[3])
+        esp = phi * ec
+        fs = self._get_fy(esp)
 
         Aps = self.prs().data[1]
         epc = NA - (cp_gc + self.prs().data[3])
@@ -237,8 +269,8 @@ class DXFSection(object):
         epspT2 = phi * epcT2
         fpsT2 = self._get_fs(epspT2)
 
-        N = [sigma.dot(dA), Aps * fps, ApsT1 * fpsT1, ApsT2 * fpsT2]
-        M = [sum(sigma * dA * -ys), Aps * fps * epc, ApsT1 * fpsT1 * epcT1, ApsT2 * fpsT2 * epcT2]
+        N = [sigma.dot(dA), As * fs, Aps * fps, ApsT1 * fpsT1, ApsT2 * fpsT2]
+        M = [sum(sigma * dA * -ys),As * fs * ec, Aps * fps * epc, ApsT1 * fpsT1 * epcT1, ApsT2 * fpsT2 * epcT2]
         return sum(M)
 
 
