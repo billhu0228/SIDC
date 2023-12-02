@@ -60,7 +60,9 @@ class Beam:
     def get_location(self, beam_id):
         for e in connect:
             if e.__contains__(beam_id):
-                return e.index(beam_id), e
+                theB = e[0]
+                part = [a for a in connect if a[0] == theB]
+                return e.index(beam_id), e, part.index(e)
         return None
 
     def make_nodes(self):
@@ -69,14 +71,12 @@ class Beam:
         pts = self.get_pts()
         n0 = self.n0
         beam_id = int(n0 / 100)
-        loc, blist = self.get_location(beam_id)
+        loc, blist, trans_loc = self.get_location(beam_id)
         for pt in pts:
             pp = pt - wc
             # fid.write("%i,%.6f,%.6f,%.6f\n" % (n0, pp.x, pp.y, pp.z))
             self.nlist.append([n0, pp.x, pp.y, pp.z])
             n0 += 1
-
-        # fid.write("*Element\n")
         n0 = self.n0
         for e in range(len(pts) - 1):
             if self.beam_type.__contains__("DE"):
@@ -103,6 +103,21 @@ class Beam:
             # fid.write(" %i,BEAM,%i,%i,%i,%i,0,0\n" % (n0, 1, 4, n0, blist[loc - 1] * 100))
             self.elist.append([n0, 1, 4, n0, blist[loc - 1] * 100])
             n0 += 1
+        if trans_loc > 0:
+            part = [a for a in connect if a[0] == blist[0]]
+            next = part[trans_loc - 1][loc]
+            if self.beam_type.__contains__("MM") or self.beam_type.__contains__("DE"):
+                tmp = 2
+                stp = 1
+            else:
+                tmp = 3
+                stp = 2
+            for nn in range(n0 % 100 - tmp):
+                self.elist.append([n0, 1, 5, beam_id * 100 + nn + stp, next * 100 + nn + stp])
+                n0 += 1
+            f = 1
+            # self.elist.append([n0, 1, 5, n0, blist[loc - 1] * 100])
+            # n0 += 1
 
     def get_pts(self):
         st = self.line[0]
