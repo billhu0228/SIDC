@@ -40,6 +40,8 @@ class Beam:
         self.n0 = nd_base
         self.nlist = []
         self.elist = []
+        self.hdr = []
+        self.lnr = []
 
     def get_z(self, x, y, cl: Align):
         st = cl.get_station_by_point(x, y)
@@ -67,17 +69,15 @@ class Beam:
 
     def make_nodes(self):
         wc = Vec3(571278.7841413167, 785624.6223043363, 0)
-        # fid.write("*NODE\n")
         pts = self.get_pts()
         n0 = self.n0
         beam_id = int(n0 / 100)
         loc, blist, trans_loc = self.get_location(beam_id)
         for pt in pts:
             pp = pt - wc
-            # fid.write("%i,%.6f,%.6f,%.6f\n" % (n0, pp.x, pp.y, pp.z))
             self.nlist.append([n0, pp.x, pp.y, pp.z])
             n0 += 1
-        n0 = self.n0
+        e0 = self.n0
         for e in range(len(pts) - 1):
             if self.beam_type.__contains__("DE"):
                 if e == len(pts) - 2:
@@ -96,28 +96,46 @@ class Beam:
                     secn = 3
             else:
                 secn = 3
-            # fid.write(" %i,BEAM,%i,%i,%i,%i,0,0\n" % (n0, 1, secn, n0, n0 + 1))
-            self.elist.append([n0, 1, secn, n0, n0 + 1])
-            n0 += 1
+            self.elist.append([e0, 1, secn, e0, e0 + 1])
+            e0 += 1
         if loc > 1:
-            # fid.write(" %i,BEAM,%i,%i,%i,%i,0,0\n" % (n0, 1, 4, n0, blist[loc - 1] * 100))
-            self.elist.append([n0, 1, 4, n0, blist[loc - 1] * 100])
+            dirX = (Vec3(self.nlist[-1][1:]) - Vec3(self.nlist[-2][1:])).normalize()
+            p0 = Vec3(self.nlist[-1][1:]) + dirX * 0.25
+            self.nlist.append([n0, p0.x, p0.y, p0.z])
             n0 += 1
+            self.elist.append([e0, 1, 4, e0, e0 + 1])
+            e0 += 1
+            self.elist.append([e0, 1, 4, e0, blist[loc - 1] * 100])
+            e0 += 1
         if trans_loc > 0:
             part = [a for a in connect if a[0] == blist[0]]
             next = part[trans_loc - 1][loc]
-            if self.beam_type.__contains__("MM") or self.beam_type.__contains__("DE"):
-                tmp = 2
-                stp = 1
+            pts = n0 % 100
+            if self.beam_type.__contains__("MM"):
+                sec_list = [None, ] + [5, ] * (pts - 3) + [None, ] + [6, ]
+            elif self.beam_type.__contains__("DE"):
+                sec_list = [None, ] + [5, ] * (pts - 3) + [6, ] + [None, ]
             else:
-                tmp = 3
-                stp = 2
-            for nn in range(n0 % 100 - tmp):
-                self.elist.append([n0, 1, 5, beam_id * 100 + nn + stp, next * 100 + nn + stp])
-                n0 += 1
-            f = 1
-            # self.elist.append([n0, 1, 5, n0, blist[loc - 1] * 100])
-            # n0 += 1
+                sec_list = [None, ] + [6, ] + [5, ] * (pts - 4) + [None, ] + [6, ]
+            for nn in range(pts):
+                if sec_list[nn] is not None:
+                    self.elist.append([e0, 1, sec_list[nn], beam_id * 100 + nn, next * 100 + nn])
+                    e0 += 1
+        if self.beam_type.__contains__("DE"):
+            p0 = Vec3(self.nlist[-1][1:])
+            self.hdr.append([n0, p0.x, p0.y, p0.z - 0.3, self.nlist[-1][0]])
+            n0 += 1
+        elif self.beam_type.__contains__("MM"):
+            p0 = Vec3(self.nlist[-1][1:])
+            self.hdr.append([n0, p0.x, p0.y, p0.z - 0.3, self.nlist[-1][0]])
+            n0 += 1
+        else:
+            p0 = Vec3(self.nlist[-1][1:])
+            self.hdr.append([n0, p0.x, p0.y, p0.z - 0.3, self.nlist[-1][0]])
+            n0 += 1
+            p0 = Vec3(self.nlist[0][1:])
+            self.hdr.append([n0, p0.x, p0.y, p0.z - 0.3, self.nlist[0][0]])
+            n0 += 1
 
     def get_pts(self):
         st = self.line[0]
@@ -177,15 +195,28 @@ if __name__ == '__main__':
         fmct.close()
         nlist = []
         elist = []
+        hdr = []
         for line in lines:
             fid.write(line)
         for b in Beams:
             b.make_nodes()
             nlist += b.nlist
             elist += b.elist
+            hdr += b.hdr
         fid.write("*NODE\n")
         for n in nlist:
             fid.write("%i,%.6f,%.6f,%.6f\n" % (n[0], n[1], n[2], n[3]))
         fid.write("*Element\n")
         for e in elist:
             fid.write(" %i,BEAM,%i,%i,%i,%i,0,0\n" % (e[0], e[1], e[2], e[3], e[4]))
+        fid.write("*NODE\n")
+        for n in hdr:
+            fid.write("%i,%.6f,%.6f,%.6f\n" % (n[0], n[1], n[2], n[3]))
+        fid.write("*NL-LINK\n")
+        nl = 1
+        for n in hdr:
+            fid.write(" %i, %i, %i, HDR720, , 0, 0, \n" % (nl, n[0], n[4]))
+            nl += 1
+        fid.write("*CONSTRAINT\n")
+        for n in hdr:
+            fid.write("%i, 111111,\n" % (n[0]))
