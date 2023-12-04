@@ -3,20 +3,25 @@ from srbpy import Align
 from ezdxf.math import Vec2, Vec3, ConstructionLine
 
 connect = [
-    ['B1', 407, 408, 409],
-    ['B1', 410, 411, 412],
+    ['B1', 409, 408, 407],
+    ['B1', 412, 411, 410],
+    ['B1', 415, 414, 413],
     ['B1', 212, 213, 214],
     ['B1', 211, 210, 209],
+
     ['B2', 509, 508, 507],
-    ['B2', 513, 514, 515],
+    ['B2', 516, 517, 518],
+    ['B2', 515, 514, 513],
     ['B2', 512, 511, 510],
-    ['B3', 406, 405, 404],
-    ['B3', 403, 402, 401],
+
+    ['B3', 406, 405, 404, ],
+    ['B3', 403, 402, 401, ],
+
     ['B4', 204, 203, 202, 201],
     ['B4', 208, 207, 206, 205],
-    ['B5', 505, 506, 301],
-    ['B5', 501, 502, 101],
-    ['B5', 503, 504, 102],
+    ['B5', 505, 506, 301, ],
+    ['B5', 501, 502, 101, ],
+    ['B5', 503, 504, 102, ],
     ['B6', 304],
     ['B6', 303],
     ['B6', 302],
@@ -33,7 +38,6 @@ class Beam:
         p0 = Vec3(st.x, st.y, p0z)
         p1 = Vec3(ed.x, ed.y, p1z)
         self.line = (p0, p1)
-        # print("%.3f%%" % ((p1.z - p0.z) / (p1 - p0).magnitude_xy * 100))
         self.beam_type = lineType
         self.align_st = align_st
         self.align_ed = align_ed
@@ -67,12 +71,11 @@ class Beam:
                 return e.index(beam_id), e, part.index(e)
         return None
 
-    def make_nodes(self):
+    def make_nodes_no_use(self):
         wc = Vec3(571278.7841413167, 785624.6223043363, 0)
         pts = self.get_pts()
         n0 = self.n0
         beam_id = int(n0 / 100)
-        loc, blist, trans_loc = self.get_location(beam_id)
         for pt in pts:
             pp = pt - wc
             self.nlist.append([n0, pp.x, pp.y, pp.z])
@@ -98,6 +101,40 @@ class Beam:
                 secn = 3
             self.elist.append([e0, 1, secn, e0, e0 + 1])
             e0 += 1
+
+    def make_nodes(self):
+        wc = Vec3(571278.7841413167, 785624.6223043363, 0)
+        pts = self.get_pts()
+        n0 = self.n0
+        beam_id = int(n0 / 100)
+        if beam_id == 409:
+            debug = True
+        for pt in pts:
+            pp = pt - wc
+            self.nlist.append([n0, pp.x, pp.y, pp.z])
+            n0 += 1
+        e0 = self.n0
+        for e in range(len(pts) - 1):
+            if self.beam_type.__contains__("DE"):
+                if e == len(pts) - 2:
+                    secn = 2
+                else:
+                    secn = 3
+            elif self.beam_type.__contains__("AA"):
+                if e == 0:
+                    secn = 2
+                else:
+                    secn = 3
+            elif self.beam_type.__contains__("SS"):
+                if e == 0 or e == (len(pts) - 2):
+                    secn = 2
+                else:
+                    secn = 3
+            else:
+                secn = 3
+            self.elist.append([e0, 1, secn, e0, e0 + 1])
+            e0 += 1
+        loc, blist, trans_loc = self.get_location(beam_id)
         if loc > 1:
             dirX = (Vec3(self.nlist[-1][1:]) - Vec3(self.nlist[-2][1:])).normalize()
             p0 = Vec3(self.nlist[-1][1:]) + dirX * 0.25
@@ -200,6 +237,7 @@ if __name__ == '__main__':
             fid.write(line)
         for b in Beams:
             b.make_nodes()
+            # b.make_nodes_no_use()
             nlist += b.nlist
             elist += b.elist
             hdr += b.hdr
