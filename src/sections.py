@@ -8,7 +8,7 @@ from src.bridge import StressInfo
 
 
 class DXFSection(object):
-    def __init__(self, idd, name, dxf, ymax, deck_h, deck_w, U, dy: float = 0.1):
+    def __init__(self, idd, name, dxf, ymax, deck_upper_h: int, deck_w, U, dy: float =1):
         self.id = idd
         self.name = name
         doc = ezdxf.readfile(dxf)
@@ -18,10 +18,10 @@ class DXFSection(object):
         self.lines = [self.ConsL(li) for li in lines]
         self.arcs = [ar.construction_tool() for ar in arcs]
         self.y_max = ymax
-        self.rebar = []
-        self.strands = []
-        self.post_1 = []
-        self.post_2 = []
+        self.rebar = [[0, 0, 0], ]
+        self.strands = [[0, 0, 0], ]
+        self.post_1 = [[0, 0, 0], ]
+        self.post_2 = [[0, 0, 0], ]
         self.sect_data: dict = {}
         self.ny = self._get_n_strip(dy)
         self.dy = self._get_dy()
@@ -30,7 +30,7 @@ class DXFSection(object):
         self.sect_data['ys'] = self._get_ys()
         self.sect_data['ws'] = self._get_ws()
         self.sect_data['dA'] = self._get_dA()
-        self.deck_h = deck_h
+        self.deck_h = deck_upper_h
         self.deck_w = deck_w
 
     def get_w(self, z0):
@@ -171,11 +171,11 @@ class DXFSection(object):
     def _N_check(self, NA, Nu, fc, epsu):
         b = self.deck_w
         h = self.deck_h
-        dy = [self.dy, ] * len(self.sect_data['dA']) + [100, h]
+        dy = [self.dy, ] * len(self.sect_data['dA']) + [1, ] * (100 + h)
         dy = np.array(dy)
-        dA = np.append(self.sect_data['dA'], [1260 * 100.0, b * h])
-        ys = np.append(self.sect_data['ys'], [self.y_max + 50.0, self.y_max + 100 + 0.5 * h])
-        ws = np.append(self.sect_data['ws'], [1260, b])
+        dA = np.append(self.sect_data['dA'], [1260, ] * 100 + [b, ] * h)
+        ys = np.append(self.sect_data['ys'], np.linspace(self.y_max + 0.5, self.y_max + 100 + h - 0.5, h + 100))
+        ws = np.append(self.sect_data['ws'], [1260, ] * 100 + [b, ] * h)
         cp_gc = dA.dot(ys) / sum(dA)
         yscp = ys - cp_gc
         dI = ws * dy ** 3 / 12.0 + dA * yscp ** 2
@@ -200,36 +200,43 @@ class DXFSection(object):
         ec = NA - (cp_gc + self.bar().data[3])
         esp = phi * ec
         fs = self._get_fy(esp)
-
+        if np.isnan(fs):
+            fs = 0
 
         Aps = self.prs().data[1]
         epc = NA - (cp_gc + self.prs().data[3])
         epsp = phi * epc
         fps = self._get_fs(epsp)
+        if np.isnan(fps):
+            fps = 0
 
         ApsT1 = self.pos(1).data[1]
         epcT1 = NA - (cp_gc + self.pos(1).data[3])
         epspT1 = phi * epcT1
         fpsT1 = self._get_fs(epspT1)
+        if np.isnan(fpsT1):
+            fpsT1 = 0
 
         ApsT2 = self.pos(2).data[1]
         epcT2 = NA - (cp_gc + self.pos(2).data[3])
         epspT2 = phi * epcT2
         fpsT2 = self._get_fs(epspT2)
+        if np.isnan(fpsT2):
+            fpsT2 = 0
 
-        N = [sigma.dot(dA),As * fs, Aps * fps, ApsT1 * fpsT1, ApsT2 * fpsT2]
+        N = [sigma.dot(dA), As * fs, Aps * fps, ApsT1 * fpsT1, ApsT2 * fpsT2]
         SN = sum(N)
         return SN - Nu
 
     def get_Mn(self, Nu, fc=-65.0, epsu=-3 * 1e-3):
-        NA = bisect(self._N_check, 1, 2200, (Nu, fc, epsu))
+        NA = bisect(self._N_check, 1, self.y_max + 100 + self.deck_h - 1, (Nu, fc, epsu))
         b = self.deck_w
         h = self.deck_h
-        dy = [self.dy, ] * len(self.sect_data['dA']) + [100, h]
+        dy = [self.dy, ] * len(self.sect_data['dA']) + [1, ] * (100 + h)
         dy = np.array(dy)
-        dA = np.append(self.sect_data['dA'], [1260 * 100.0, b * h])
-        ys = np.append(self.sect_data['ys'], [self.y_max + 50.0, self.y_max + 100 + 0.5 * h])
-        ws = np.append(self.sect_data['ws'], [1260, b])
+        dA = np.append(self.sect_data['dA'], [1260, ] * 100 + [b, ] * h)
+        ys = np.append(self.sect_data['ys'], np.linspace(self.y_max + 0.5, self.y_max + 100 + h - 0.5, h + 100))
+        ws = np.append(self.sect_data['ws'], [1260, ] * 100 + [b, ] * h)
         cp_gc = dA.dot(ys) / sum(dA)
         yscp = ys - cp_gc
         dI = ws * dy ** 3 / 12.0 + dA * yscp ** 2
@@ -251,26 +258,39 @@ class DXFSection(object):
         fpu = 0.9 * 1860
         As = self.bar().data[1]
         ec = NA - (cp_gc + self.bar().data[3])
+        if np.isnan(ec):
+            ec=0
         esp = phi * ec
         fs = self._get_fy(esp)
 
         Aps = self.prs().data[1]
         epc = NA - (cp_gc + self.prs().data[3])
+        if np.isnan(epc):
+            epc=0
         epsp = phi * epc
         fps = self._get_fs(epsp)
 
+
         ApsT1 = self.pos(1).data[1]
         epcT1 = NA - (cp_gc + self.pos(1).data[3])
+        if np.isnan(epcT1):
+            epcT1=0
         epspT1 = phi * epcT1
         fpsT1 = self._get_fs(epspT1)
+        if np.isnan(fpsT1):
+            fpsT1 = 0
 
         ApsT2 = self.pos(2).data[1]
         epcT2 = NA - (cp_gc + self.pos(2).data[3])
+        if np.isnan(epcT2):
+            epcT2=0
         epspT2 = phi * epcT2
         fpsT2 = self._get_fs(epspT2)
+        if np.isnan(fpsT2):
+            fpsT2 = 0
 
         N = [sigma.dot(dA), As * fs, Aps * fps, ApsT1 * fpsT1, ApsT2 * fpsT2]
-        M = [sum(sigma * dA * -ys),As * fs * ec, Aps * fps * epc, ApsT1 * fpsT1 * epcT1, ApsT2 * fpsT2 * epcT2]
+        M = [sum(sigma * dA * -ys), As * fs * ec, Aps * fps * epc, ApsT1 * fpsT1 * epcT1, ApsT2 * fpsT2 * epcT2]
         return sum(M)
 
 

@@ -48,7 +48,7 @@ R1Station = [
     180.3640,  # SA
     213.3640,  # R1-1
     322.364,  # R1-3
-    367.364, # R1-4
+    367.364,  # R1-4
     407.7280,  # R1-5
     448.4280,  # R1-6
     7.4740,  # R1-7
@@ -87,6 +87,7 @@ for st in Mst:
     print("%.8f,%.8f" % (left[0], left[1]))
     print("%.8f,%.8f" % (cc[0], cc[1]))
     print("%.8f,%.8f" % (right[0], right[1]))
+    print(M.get_ground_elevation(st,0))
 #
 #     # print("%.6f,%.6f" % (ddir[0], ddir[1]))
 print("---R1---")
