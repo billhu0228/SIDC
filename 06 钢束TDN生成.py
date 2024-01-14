@@ -75,6 +75,23 @@ def pre():
     print(txt)
 
 
+def pre3x40():
+    txt = "*TDN-PROFILE\n"
+    txt += TDNProfile("1000to1043", "1A", 260, 39750, 6300)
+    txt += TDNProfile("1046to1089", "1B", 40250, 79750, 6300)
+    txt += TDNProfile("1092to1135", "1C", 80250, 119740, 6300)
+    txt += TDNProfile("2000to2043", "2A", 260, 39750, 4200)
+    txt += TDNProfile("2046to2089", "2B", 40250, 79750, 4200)
+    txt += TDNProfile("2092to2135", "2C", 80250, 119740, 4200)
+    txt += TDNProfile("3000to3043", "3A", 260, 39750, 2100)
+    txt += TDNProfile("3046to3089", "3B", 40250, 79750, 2100)
+    txt += TDNProfile("3092to3135", "3C", 80250, 119740, 2100)
+    txt += TDNProfile("4000to4043", "4A", 260, 39750, 0)
+    txt += TDNProfile("4046to4089", "4B", 40250, 79750, 0)
+    txt += TDNProfile("4092to4135", "4C", 80250, 119740, 0)
+    print(txt)
+
+
 def mct_post():
     txt = "*TDN-PROFILE\n"
     for i in range(3):
@@ -84,16 +101,33 @@ def mct_post():
         xx2, zz2 = get_vertical_val([44740, 45000, 44740], 260, [1350, 560, 1780])
         xx3, zz3 = get_vertical_val([44740, 45000, 44740], 260, [950, 440, 440])
         xx4, zz4 = get_vertical_val([44740, 45000, 44740], 260, [550, 320, 320])
-        txt += post_tendon(all_ele, xx1, zz1, "%sT1" % n, (2-i) * 3000)
-        txt += post_tendon(all_ele, xx2, zz2, "%sT2" % n, (2-i) * 3000)
-        txt += post_tendon(all_ele, xx3, zz3, "%sT3" % n, (2-i) * 3000)
-        txt += post_tendon(all_ele, xx4, zz4, "%sT4" % n, (2-i) * 3000)
+        txt += post_tendon(all_ele, xx1, zz1, "%sT1" % n, (2 - i) * 3000)
+        txt += post_tendon(all_ele, xx2, zz2, "%sT2" % n, (2 - i) * 3000)
+        txt += post_tendon(all_ele, xx3, zz3, "%sT3" % n, (2 - i) * 3000)
+        txt += post_tendon(all_ele, xx4, zz4, "%sT4" % n, (2 - i) * 3000)
+    print(txt)
+
+
+def mct_post3x40():
+    txt = "*TDN-PROFILE\n"
+    for i in range(4):
+        n = i + 1
+        all_ele = "%s000to%s135" % (n, n)  #
+        xx1, zz1 = get_vertical_val([39740, 40000, 39740], 260, [1750, 680, 1900])
+        xx2, zz2 = get_vertical_val([39740, 40000, 39740], 260, [1350, 560, 1780])
+        xx3, zz3 = get_vertical_val([39740, 40000, 39740], 260, [950, 440, 440])
+        xx4, zz4 = get_vertical_val([39740, 40000, 39740], 260, [550, 320, 320])
+        txt += post_tendon(all_ele, xx1, zz1, "%sT1" % n, (3 - i) * 2100)
+        txt += post_tendon(all_ele, xx2, zz2, "%sT2" % n, (3 - i) * 2100)
+        txt += post_tendon(all_ele, xx3, zz3, "%sT3" % n, (3 - i) * 2100)
+        txt += post_tendon(all_ele, xx4, zz4, "%sT4" % n, (3 - i) * 2100)
     print(txt)
 
 
 if __name__ == "__main__":
     # pre()
-    mct_post()
+    # pre3x40()
+    mct_post3x40()
     # txt = "*TDN-PROFILE\n"
     # txt += TDNProfile("1000to1048", "1A", 260, 44750)
     # txt += TDNProfile("201to245", "1B", 45250, 89750)
