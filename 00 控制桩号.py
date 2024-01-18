@@ -84,11 +84,11 @@ for st in Mst:
     ydir = ddir.rotate_deg(90)
     left = cc + ydir * 10
     right = cc - ydir * 10
-    print("%.8f,%.8f" % (left[0], left[1]))
-    print("%.8f,%.8f" % (cc[0], cc[1]))
-    print("%.8f,%.8f" % (right[0], right[1]))
-    print(M.get_ground_elevation(st,0))
-#
+    # print("%.8f,%.8f" % (left[0], left[1]))
+    # print("%.8f,%.8f" % (cc[0], cc[1]))
+    # print("%.8f,%.8f" % (right[0], right[1]))
+    # print(M.get_ground_elevation(st, 0))
+    print("%.3f纵坡: %.3f" % (st, M.get_slope(st)))
 #     # print("%.6f,%.6f" % (ddir[0], ddir[1]))
 print("---R1---")
 for st in R1Station:
@@ -97,9 +97,10 @@ for st in R1Station:
     ydir = ddir.rotate_deg(90)
     left = cc + ydir * 10
     right = cc - ydir * 10
-    print("%.8f,%.8f" % (left[0], left[1]))
-    print("%.8f,%.8f" % (cc[0], cc[1]))
-    print("%.8f,%.8f" % (right[0], right[1]))
+    # print("%.8f,%.8f" % (left[0], left[1]))
+    # print("%.8f,%.8f" % (cc[0], cc[1]))
+    # print("%.8f,%.8f" % (right[0], right[1]))
+    print("%.3f纵坡: %.3f" % (st, D1.get_slope(st)))
 print("----R2-----")
 for st in R2Station:
     cc = Vec2(D2.get_coordinate(st))
@@ -107,10 +108,10 @@ for st in R2Station:
     ydir = ddir.rotate_deg(90)
     left = cc + ydir * 10
     right = cc - ydir * 10
-    print("%.8f,%.8f" % (left[0], left[1]))
-    print("%.8f,%.8f" % (cc[0], cc[1]))
-    print("%.8f,%.8f" % (right[0], right[1]))
-
+    # print("%.8f,%.8f" % (left[0], left[1]))
+    # print("%.8f,%.8f" % (cc[0], cc[1]))
+    # print("%.8f,%.8f" % (right[0], right[1]))
+    print("%.3f纵坡: %.3f" % (st, D2.get_slope(st)))
 print("----R3-----")
 for st in R3Station:
     cc = Vec2(D3.get_coordinate(st))
@@ -118,10 +119,10 @@ for st in R3Station:
     ydir = ddir.rotate_deg(90)
     left = cc + ydir * 10
     right = cc - ydir * 10
-    print("%.8f,%.8f" % (left[0], left[1]))
-    print("%.8f,%.8f" % (cc[0], cc[1]))
-    print("%.8f,%.8f" % (right[0], right[1]))
-
+    # print("%.8f,%.8f" % (left[0], left[1]))
+    # print("%.8f,%.8f" % (cc[0], cc[1]))
+    # print("%.8f,%.8f" % (right[0], right[1]))
+    print("%.3f纵坡: %.3f" % (st, D3.get_slope(st)))
 print("----R4-----")
 for st in R4Station:
     cc = Vec2(D4.get_coordinate(st))
@@ -129,6 +130,7 @@ for st in R4Station:
     ydir = ddir.rotate_deg(90)
     left = cc + ydir * 10
     right = cc - ydir * 10
-    print("%.8f,%.8f" % (left[0], left[1]))
-    print("%.8f,%.8f" % (cc[0], cc[1]))
-    print("%.8f,%.8f" % (right[0], right[1]))
+    # print("%.8f,%.8f" % (left[0], left[1]))
+    # print("%.8f,%.8f" % (cc[0], cc[1]))
+    # print("%.8f,%.8f" % (right[0], right[1]))
+    print("%.3f纵坡: %.3f" % (st, D4.get_slope(st)))

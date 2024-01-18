@@ -17,8 +17,8 @@ def get_control_line(M: Align, station: float, degree):
     ux = Vec2(M.get_direction(station))
     uy = ux.rotate(Angle.from_degrees(degree).to_rad())
     ux = uy.rotate(Angle.from_degrees(-90.0).to_rad())
-    p0 = cc + uy * 15
-    p1 = cc - uy * 15
+    p0 = cc + uy * 10
+    p1 = cc - uy * 10
     return p1, cc, p0
 
 
@@ -68,21 +68,5 @@ if __name__ == '__main__':
         if not np.isnan(row['桩号']):
             st = row["桩号"]
             CL: Align = CL_dic[row['线位']]
-            deg = 90.0  # row['基础转角']
-            result.append(get_control_line(CL, st, deg))
-            text.append("%s (%s of %s)" % (row['墩台号'], st, row['线位']))
+            deg = row['基础转角']
 
-    doc = ezdxf.new()
-    msp = doc.modelspace()
-    ly = doc.layers.new("跨径线")
-    ly.color = 50
-    ly = doc.layers.new("承台")
-    ly.color = 130
-    pile_att = GfxAttribs(layer="跨径线")
-    ct_att = GfxAttribs(layer="承台")
-    for kk, ps in enumerate(result):
-        ss = text[kk]
-        msp.add_polyline2d(ps, dxfattribs=pile_att)
-        msp.add_text("%s " % (ss), height=0.1, dxfattribs=pile_att).set_placement(ps[1], align=TextEntityAlignment.MIDDLE_CENTER)
-    now = datetime.date.today()
-    doc.saveas("./res/互通区跨径线-%s.dxf" % (now.strftime("%y%m%d")))
