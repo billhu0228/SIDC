@@ -42,7 +42,7 @@ if __name__ == "__main__":
     LL_max = Q_(490, ureg.kN).to(ureg.kip)  # 边支座活载
     FrcCoff = 0.03
     K_l = 2.0 * (ureg.kN / ureg.mm)
-    deltaS = FrcCoff * (DCDW + LL_max) / K_l
+    deltaS = FrcCoff * (DCDW + LL_max) / K_l #
     # --------------------------------
     n = int(2 * deltaS / hri) + 1 + 2
     hrt = hri * n + (5 * ureg.mm)

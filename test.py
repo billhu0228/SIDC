@@ -14,8 +14,22 @@ def get_surf(cl: Align, pk, dist):
 
 
 if __name__ == "__main__":
-    pt = Vec2(D1.get_coordinate(407.728 - 0.7))
-    print("%.6f,%.6f" % (pt.x, pt.y))
+    st = {
+        180.364: D1,
+        13.364: D1,
+        51.364: D1,
+        45.888: D4,
+        84.000: D3,
+        80.769: D4,
+        06.107: D1,
+        48.428: D1,
+
+    }
+    for key in st.keys():
+        cl, cr = st[key].get_cross_slope(key)
+        print("%.3f" % ( cr))
+    # pt = Vec2(D1.get_coordinate(407.728 - 0.7))
+    # print("%.6f,%.6f" % (pt.x, pt.y))
     # pt = Vec2(D1.get_coordinate(213.364))
     # print(D2.get_station_by_point(pt.x, pt.y))
     # p0 = (571394.843883, 785597.37487)

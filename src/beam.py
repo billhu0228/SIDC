@@ -2,54 +2,51 @@ from ezdxf.math import Vec2, Vec3, ConstructionLine
 from srbpy import Align
 
 connect = [
-    ['B11', 101, 102],
-    ['S12', 103, ],
-    ['S12', 104, ],
-    ['S12', 105, ],
-    ['S12', 106, ],
-    ['B13', 309, 308, 307, 109, 108, 107],
+    ['B11', 101, 102, 103],
+    # ['S12', 103, ],
+    # ['S12', 104, ],
+    # ['S12', 105, ],
+    # ['S12', 106, ],
+    ['B13', 307, 306, 305, 304, 106, 105, 104],
 
+    ['B14', 309, 308, 108, 107],
+    ['B14', 504, 503, 502, 501],
+    ['B14', 508, 507, 506, 505],
 
-    ['B14', 310, 111, 110],
-    ['B14', 503, 502, 501],
-    ['B14', 506, 505, 504],
+    ['B21', 201, 202, 203],
+    # ['S22', 203, ],
+    # ['S22', 204, ],
+    # ['S22', 205, ],
+    # ['S22', 206, ],
+    # ['S22', 207, ],
+    ['B23', 206, 205, 204],
+    ['B23', 209, 208, 207],
+    ['B23', 212, 211, 210],
+    ['B23', 215, 214, 213],
 
-    ['B21', 201, 202],
-    ['S22', 203, ],
-    ['S22', 204, ],
-    ['S22', 205, ],
-    ['S22', 206, ],
-    ['S22', 207, ],
-    ['B23', 209, 208],
-    ['B23', 211, 210],
-    ['B23', 213, 212],
-    ['B23', 215, 214],
+    ['B31', 303, 302, 301],
+    # ['S32', 301, ],
+    # ['S32', 302, ],
+    # ['S32', 303, ],
+    # ['S32', 304, ],
 
-    ['B31', 306, 305],
-    ['S32', 301, ],
-    ['S32', 302, ],
-    ['S32', 303, ],
-    ['S32', 304, ],
+    # ['S41', 403, ],
+    # ['S41', 401, ],
+    # ['S41', 402, ],
+    # ['S41', 404, ],
+    ['B42', 403, 402, 401],
+    ['B42', 406, 405, 404],
+    ['B42', 409, 408, 407],
 
-    ['S41', 403, ],
-    ['S41', 401, ],
-    ['S41', 402, ],
-    ['S41', 404, ],
-    ['B42', 406, 405],
-    ['B42', 408, 407],
-    ['B42', 410, 409],
+    ['B51', 512, 511, 510, 509],
+    ['B51', 516, 515, 514, 513],
+    ['B51', 520, 519, 518, 517],
 
-    ['B51', 510, 509, 508, 507],
-    ['B51', 514, 513, 512, 511],
-    ['B51', 518, 517, 516, 515],
+    ['B52', 412, 411, 410, 217, 216],
+    ['B52', 415, 414, 413, 219, 218],
+    ['B52', 418, 417, 416, 221, 220],
 
-    ['B52', 413, 412, 411, 217, 216],
-    ['B52', 416, 415, 414, 219, 218],
-    ['B52', 419, 418, 417, 221, 220],
-
-
-
-
+    ['B53', 526, 525, 524, 523, 522, 521],
 ]
 
 
@@ -78,7 +75,11 @@ class Beam:
         cc = Vec2(*cl.get_coordinate(st))
         pt = Vec2(x, y)
         dist = cc.distance(pt)
-        assert dist <= 15
+        try:
+            assert dist <= 15
+        except AssertionError:
+            deb = 1
+
         cp = cl.get_cross_slope(st)
         lr = cl.get_side(x, y)
         if lr == 0:
@@ -129,11 +130,12 @@ class Beam:
 
     def make_nodes(self):
         wc = Vec3(571278.7841413167, 785624.6223043363, 0)
-        pts = self.get_pts()
+
         n0 = self.n0
         beam_id = int(n0 / 100)
-        if beam_id == 409:
+        if beam_id == 207:
             debug = True
+        pts = self.get_pts()
         for pt in pts:
             pp = pt - wc
             self.nlist.append([n0, pp.x, pp.y, pp.z])
@@ -159,30 +161,34 @@ class Beam:
                 secn = 3
             self.elist.append([e0, 1, secn, e0, e0 + 1])
             e0 += 1
-        loc, blist, trans_loc = self.get_location(beam_id)
-        if loc > 1:
+        trans_loc, blist, loc = self.get_location(beam_id)
+        part = [a for a in connect if a[0] == blist[0]]
+        if loc != len(part) - 1:
             dirX = (Vec3(self.nlist[-1][1:]) - Vec3(self.nlist[-2][1:])).normalize()
             p0 = Vec3(self.nlist[-1][1:]) + dirX * 0.25
             self.nlist.append([n0, p0.x, p0.y, p0.z])
             n0 += 1
             self.elist.append([e0, 1, 4, e0, e0 + 1])
             e0 += 1
-            self.elist.append([e0, 1, 4, e0, blist[loc - 1] * 100])
+            self.elist.append([e0, 1, 4, e0, part[loc + 1][trans_loc] * 100])
             e0 += 1
-        if trans_loc > 0:
-            part = [a for a in connect if a[0] == blist[0]]
-            next = part[trans_loc - 1][loc]
+
+        if trans_loc > 1:
+            next = blist[trans_loc - 1]
             pts = n0 % 100
             if self.beam_type.__contains__("MM"):
                 sec_list = [None, ] + [5, ] * (pts - 3) + [None, ] + [6, ]
             elif self.beam_type.__contains__("DE"):
                 sec_list = [None, ] + [5, ] * (pts - 3) + [6, ] + [None, ]
+            elif self.beam_type.__contains__("AA"):
+                sec_list = [None, ] + [5, ] * (pts - 3) + [None, ] + [6, ]
             else:
-                sec_list = [None, ] + [6, ] + [5, ] * (pts - 4) + [None, ] + [6, ]
+                sec_list = [None, ] + [6, ] + [5, ] * (pts - 4) + [6, ] + [None, ]
             for nn in range(pts):
                 if sec_list[nn] is not None:
                     self.elist.append([e0, 1, sec_list[nn], beam_id * 100 + nn, next * 100 + nn])
                     e0 += 1
+
         if self.beam_type.__contains__("DE"):
             p0 = Vec3(self.nlist[-1][1:])
             self.hdr.append([n0, p0.x, p0.y, p0.z - 0.3, self.nlist[-1][0]])

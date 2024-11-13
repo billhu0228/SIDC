@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def TDNProfile(ele: str, span_label: str, x0, x1, z):
     profile = [
         [8, 4, 2, 0],
@@ -154,9 +157,11 @@ def mct_post30_3x45():
 
 
 if __name__ == "__main__":
+
+
     # mct_post30_3x45()
     # pre30_3x45()
-    # pre()
+    pre()
     # pre3x40()
     mct_post3x40()
     # txt = "*TDN-PROFILE\n"

@@ -1,0 +1,2613 @@
+;---------------------------------------------------------------------------
+;  MIDAS/Civil Text(MCT) File.
+;  Date : 2023/12/1
+;---------------------------------------------------------------------------
+
+*VERSION
+   8.9.5
+
+*UNIT    ; Unit System
+; FORCE, LENGTH, HEAT, TEMPER
+   N    , M, KJ, C
+
+*PROJINFO    ; Project Information
+; PROJECT, REVISION, USER, EMAIL, ADDRESS, TEL, FAX, CLIENT, TITLE, ENGINEER, EDATE       ; One Line per Data
+; CHECK1, CDATE1, CHECK2, CDATE2, CHECK3, CDATE3, APPROVE, ADATE, COMMENT                 ; One Line per Data
+   USER=bill
+   ADDRESS=HPDI
+
+*REBAR-MATL-CODE    ; Rebar Material Code
+; CONC_CODE, CONC_MDB, SRC_CODE, SRC_MDB
+ JTG04(RC), HRB335, JTG04(RC), HRB335
+
+
+
+*BNDR-GROUP    ; Boundary Group
+; NAME, AUTOTYPE
+ 临时支座, 0
+ 预制底模, 0
+ 永久支座, 0
+ 盖梁, 0
+
+*LOAD-GROUP    ; Load Group
+; NAME
+ 先张放张
+ 自重
+ 后张放张1
+ DW
+ 后张放张2
+ 湿重1
+ 湿重2
+
+*MATERIAL    ; Material
+; iMAT, TYPE, MNAME, SPHEAT, HEATCO, PLAST, TUNIT, bMASS, DAMPRATIO, [DATA1]           ; STEEL, CONC, USER
+; iMAT, TYPE, MNAME, SPHEAT, HEATCO, PLAST, TUNIT, bMASS, DAMPRATIO, [DATA2], [DATA2]  ; SRC
+; [DATA1] : 1, STANDARD, CODE/PRODUCT, DB, USEELAST, ELAST
+; [DATA1] : 2, ELAST, POISN, THERMAL, DEN, MASS
+; [DATA1] : 3, Ex, Ey, Ez, Tx, Ty, Tz, Sxy, Sxz, Syz, Pxy, Pxz, Pyz, DEN, MASS         ; Orthotropic
+; [DATA2] : 1, STANDARD, CODE/PRODUCT, DB, USEELAST, ELAST or 2, ELAST, POISN, THERMAL, DEN, MASS
+    1, CONC , C65               , 0, 0, , C, NO, 0.05, 2, 3.8837e+010,   0.2, 1.0000e-005, 25500,     0
+    2, STEEL, Strand1860        , 0, 0, , C, NO, 0.02, 1, JTG3362-18(S),            , Strand1860    , NO, 1.95e+011
+
+*TDM-TYPE    ; Time Dependent Material
+; NAME=NAME, CODE, STR, HU, VOL, AGE, CFACTA, CFACTB, TYPE, [ACI1 or ACI2]     ; CODE=ACI
+; NAME=NAME, CODE, STR, HU, MSIZE, CTYPE, AGE                                  ; CODE=CEB1990,KS,CEB1978,KSCE 2010,KCI-USD12,CEB-FIP2010
+; NAME=NAME, CODE, N1, PHI1, N2, PHI2                                          ; CODE=MEM
+; NAME=NAME, CODE, STR, HU, USS, UCS, VOL, RR, MOD                             ; CODE=PCA
+; NAME=NAME, CODE, STR, HU, VOL, UCS, VSR1, LAF, US, VSR, PST, bRCE, RR, MOD   ; CODE=COMBINED
+; NAME=NAME, CODE, STR, HTYPE, HU, MSIZE, CTYPE, AGE, CM                       ; CODE=JAPAN
+; NAME=NAME, CODE, ELAST, HU, VOL, CC, WC, AGE                                 ; CODE=JSCE
+; NAME=NAME, CODE, STR, HTYPE, HU, MSIZE, AGE                                  ; CODE=CHINA
+; NAME=NAME, CODE, STR, HU, MSIZE, BSC, AGE                                    ; CODE=JTG
+; NAME=NAME, CODE, STR, HU, VSR, AGE, bEXPOSE                                  ; CODE=AASHTO
+; NAME=NAME, CODE, STR, HU, MSIZE, AGE                                         ; CODE=INDIA(IRC:18-2000)
+; NAME=NAME, CODE, STR, HU, MSIZE, CTYPE, AGE                                  ; CODE=INDIA(IRC:112-2011)
+; NAME=NAME, CODE, STR, HU, MSIZE, CTYPE, AGE, TCode, bSILICA                  ; CODE=European
+; NAME=NAME, CODE, STR, EE(Not Use), FS, HT, DSE, DSC, AGE                     ; CODE=NZ Bridge(SP/M/022)
+; NAME=NAME, CODE, STR, HU, AGE, M, CMETH, CTYPE, CREEP, CONCT, W, MAXS, A, PZ ; CODE=Russian
+; NAME=NAME, CODE, STR, HU, MSIZE, BSC, AGE, FLYASH                            ; CODE=China(JTG3362-2018)
+; NAME=NAME, CODE, STR, EE, HT, DSC, DSCUSR, AGE                               ; CODE=Australia
+; NAME=NAME, CODE, STR, HU, MSIZE, CTYPE, AGE, DENSITY                         ; CODE=KDS-2016
+; NAME=NAME, CODE, bSSF, SSFNAME                                               ; CODE=USER(line1)
+;      CREEPFUNC1, AGE1, CREEPFUNC2, AGE2, ...                                 ; USER(from line 2)
+; [ACI1] : CURE, SLUMP, FAP, AIR, CC
+; [ACI2] : UCC, USS
+   NAME=fc65, CEB, 6.5e+007, 80, 0.192, NR, 3, 0
+
+*TDM-ELAST    ; Time Dependent Material(Comp. Strength)
+; NAME=NAME, TYPE, CODE, STRENGTH, A, B                          ; TYPE=CODE(Korean Standard, ACI)
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE                        ; TYPE=CODE(CEB-FIP, Ohzagi, KCI-USD12)
+; NAME=NAME, TYPE, CODE, STRENGTH, bUSE, [DATA]                  ; TYPE=CODE(Japan(Hydration))
+; NAME=NAME, TYPE, CODE, STRENGTH, iTYPE                         ; TYPE=CODE(Japan(Elastic))
+; NAME=NAME, TYPE, CODE, STRENGTH                                ; TYPE=CODE(INDIA(IRC:18-2000))
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE                        ; TYPE=CODE(INDIA(IRC:112-2011))
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE                        ; TYPE=CODE(European)
+; NAME=NAME, TYPE, CODE, STRENGTH,                               ; TYPE=CODE(CEB-FIP(1978))
+; NAME=NAME, TYPE, CODE, STRENGTH, TYPE, CMETH, CTYPE, MAXS, PZ  ; TYPE=CODE(Russian))
+; NAME=NAME, TYPE, CODE, STRENGTH,                               ; TYPE=CODE=Australia
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE, nAGGRE                ; TYPE=CODE(CEB-FIP 2010)
+; NAME=NAME, TYPE, CODE, STRENGTH, iCTYPE, DENSITY               ; TYPE=CODE(KDS 2016)
+; NAME=NAME, TYPE, SCALE                                         ; TYPE=USER(line 1)
+;      DAY1, COMP1, TENS1, ELAST1, DAY2, COMP2, ...              ;      USER(from line 2)
+; [DATA] : ( A, B, D, TSF ) or ( iCTYPE, TSF)
+   NAME=fc65, CODE, CEB-FIP(1990), 6.5e+007, 2
+
+*TDM-LINK    ; Time Dependent Material Link
+; iMAT, TDM-TYPE1(CREEP/SHRINKAGE), TDM-TYPE2(ELASTICITY)
+    1, fc65, fc65
+
+*SECT-PSCVALUE    ; PSC Value, General Section, Composite PC, Composite General
+; SECT=iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, bBU, bEQ, SNAME2(PSC VAL)   ; 1st line
+;      [STIFF1]                                                                  ; 2nd line
+;      [STIFF2]                                                                  ; 3rd line
+;      [STIFF3]                                                                  ; 4th line
+;      T1, T2, BT, HT                                                            ; 5th line(PSC)
+;      bSHEARCHK, [SCHK], [WT]                                                   ; 6th line(PSC)
+;      SW, GN, CTC, Bc, Tc, Hh, EsEc, DsDc, Ps, Pc                               ; 7th line(COMPOSITE-PC)
+;      OPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Outer Polygon(PLANE)
+;      IPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Inner Polygon(PLANE)
+;      ...
+;      IPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Inner Polygon(PLANE)
+;      VERTEX=X1, Y1, X2, Y2, ..., Xn, Yn                                        ; Vertex(General-LINE)
+;      LINE=VI1, VJ1, dTHIK1, iALIGN1                                            ; Line(General-LINE)
+;      ...
+;      LINE=VIn, VJn, dTHIKn, iALIGNn                                            ; Line(General-LINE)
+;      LOOP=COUNT1, LIX11, LIX12, ..., LIXn                                      ; Line(General-LINE)
+;      ...
+;      LOOP=COUNTn, LIXn1, LIXn2, ..., LIXnn                                     ; Line(General-LINE)
+; SECT=iSEC, TYPE, SNAME, [OFFSET2], bSD, bWE, SHAPE, iyVAR, izVAR, bEQ          ; 1st line - TAPERED
+;      [STIFF1-I]                                                                ; 2nd line
+;      [STIFF2-I]                                                                ; 3rd line
+;      [STIFF3-I]                                                                ; 4th line
+;      [STIFF1-J]                                                                ; 5th line
+;      [STIFF2-J]                                                                ; 6th line
+;      [STIFF3-J]                                                                ; 7th line
+;      T1-I, T2-I, BT-I, HT-I, T1-J, T2-J, BT-J, HT-J                            ; 8th line(PSC)
+;      bSHEARCHK, [SCHK-I], [WT-I], [SCHK-J], [WT-J]                             ; 9rd line(PSC)
+;      OPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Outer Polygon(PLANE)
+;      IPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Inner Polygon(PLANE)
+;      ...
+;      IPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Inner Polygon(PLANE)
+;      VERTEX=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                    ; Vertex(General-LINE)
+;      LINE=bI, VI1, VJ1, dTHIK1, iALIGN1                                        ; Line(General-LINE)
+;      ...
+;      LINE=bI, VIn, VJn, dTHIKn, iALIGNn                                        ; Line(General-LINE)
+;      LOOP=bI, COUNT1, LIX11, LIX12, ..., LIXn                                  ; Line(General-LINE)
+;      ...
+;      LOOP=bI, COUNTn, LIXn1, LIXn2, ..., LIXnn                                 ; Line(General-LINE)
+; SECT=iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, bBU, bEQ, BPRT              ; 1st line - COMPOSITE-GEN
+;      [PART1]                                                                   ; 2nd line
+;      [PART2]                                                                   ; 3rd line
+;      ...
+; SECT=iSEC, TYPE, SNAME, [OFFSET2], bSD, bWE, SHAPE, iyVAR, izVAR, bEQ, PARTNUM ; 1st line - COMPOSITE-GEN(TAPERED)
+;      [PART1]-I                                                                 ; 2nd line
+;      [PART2]-I                                                                 ; next lines
+;      ...
+;      [PART1]-J                                                                 ; next lines
+;      [PART2]-J                                                                 ; next lines
+;      ...
+; [OFFSET] : OFFSET, iCENT, iREF, iHORZ, HUSER, iVERT, VUSER
+; [OFFSET2]: OFFSET, iCENT, iREF, iHORZ, HUSERI, HUSERJ, iVERT, VUSERI, VUSERJ
+; [STIFF1] : AREA, ASy, ASz, Ixx, Iyy, Izz
+; [STIFF2] ; Cyp, Cym, Czp, Czm, Qyb, Qzb, PERI_OUT, PERI_IN, Cy, Cz
+; [STIFF3] ; Y1, Y2, Y3, Y4, Z1, Z2, Z3, Z4
+; [SCHK]   : Z1, Z3, bAUTO_QY1, QY1, bAUTO_QY2, QY2, bAUTO_QY3, QY3
+; [WT]     : TOR, bAUTO_SHR1, SHR1, bAUTO_SHR2, SHR2, bAUTO_SHR3, SHR3
+; [PART] : PART=part_num
+;        : [STIFF1]
+;        : [STIFF2]
+;        : [STIFF3]
+;        : [STIFF1]                                                            ; [STIFF1] of Part Sum.
+;        : [STIFF2]                                                            ; [STIFF2] of Part Sum.
+;        : [STIFF3]                                                            ; [STIFF3] of Part Sum.
+;        : OPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Outer Polygon(PLANE)
+;        : IPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Inner Polygon(PLANE)
+;        : ...
+;        : IPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Inner Polygon(PLANE)
+;        : VERTEX=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                    ; Vertex(General-LINE)
+;        : LINE=(bI-Tapered), VI1, VJ1, dTHIK1, iALIGN1                        ; Line(General-LINE)
+;        : ...
+;        : LINE=(bI-Tapered), VIn, VJn, dTHIKn, iALIGNn                        ; Line(General-LINE)
+;        : LOOP=(bI-Tapered), COUNT1, LIX11, LIX12, ..., LIXn                  ; Line(General-LINE)
+;        : ...
+;        : LOOP=(bI-Tapered), COUNTn, LIXn1, LIXn2, ..., LIXnn                 ; Line(General-LINE)
+ SECT=   1, COMPOSITE-GEN, NU2000近墩顶      , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.62914, 0.80912, -0.62659, 0.80021
+             -0.62245, 0.79193, -0.61685, 0.78455, -0.60999, 0.77833
+             -0.60209, 0.77349, -0.59344, 0.77018, -0.58433, 0.76853
+             -0.29517, 0.74338, -0.25872, 0.73677, -0.22411, 0.72355
+             -0.19254, 0.70417, -0.16508, 0.67929, -0.14268, 0.64978
+             -0.1261, 0.61665, -0.11593, 0.58103, -0.1125, 0.54414
+             -0.1125, -0.746496, -0.11557, -0.781407, -0.12468, -0.815246
+             -0.13957, -0.846974, -0.15976, -0.875617, -0.18465, -0.900295
+             -0.21346, -0.920251, -0.24531, -0.934871, -0.47179, -1.01566
+             -0.47976, -1.01931, -0.48696, -1.0243, -0.49318, -1.03047
+             -0.49823, -1.03763, -0.50195, -1.04556, -0.50423, -1.05402
+             -0.505, -1.06275, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, -1.06275, 0.50424, -1.05402
+             0.50196, -1.04556, 0.49824, -1.03763, 0.49319, -1.03047
+             0.48697, -1.0243, 0.47976, -1.01931, 0.4718, -1.01566
+             0.24531, -0.934871, 0.21346, -0.920251, 0.18465, -0.900295
+             0.15977, -0.875617, 0.13958, -0.846974, 0.12469, -0.815246
+             0.11557, -0.781407, 0.1125, -0.746496, 0.1125, 0.54414
+             0.11593, 0.58103, 0.12611, 0.61665, 0.14268, 0.64978
+             0.16508, 0.67929, 0.19254, 0.70417, 0.22412, 0.72355
+             0.25872, 0.73677, 0.29518, 0.74338, 0.58433, 0.76853
+             0.59345, 0.77018, 0.6021, 0.77349, 0.60999, 0.77833
+             0.61686, 0.78455, 0.62246, 0.79193, 0.6266, 0.80021
+             0.62915, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       1.36877, 1.51987, 0.644886, 0.432737, 0.032328, 0.919403, 0.493711
+       0.629999, 0.630001, 0.472623, 1.52738, 0, 0, 6.81, 0, 1.55, 1.52738
+       -0.630001, 0.629999, 0.484999, -0.485001, 0.472623, 0.472623, -1.52738, -1.52738
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   2, COMPOSITE-GEN, NU2000端部        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.629142, 0.80912, -0.626598, 0.80021
+             -0.622455, 0.79193, -0.616855, 0.78455, -0.60999, 0.77833
+             -0.602097, 0.77349, -0.593445, 0.77018, -0.584331, 0.76853
+             -0.505, 0.76163, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, 0.76163, 0.584332, 0.76853
+             0.593445, 0.77018, 0.602097, 0.77349, 0.60999, 0.77833
+             0.616855, 0.78455, 0.622455, 0.79193, 0.626598, 0.80021
+             0.629142, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       2.68351, 2.83461, 1.03994, 1.71973, 0.495715, 1.38226, 0.6406
+       0.63, 0.63, 0.706055, 1.29394, 0, 0, 6.81, 0, 1.55, 1.29394
+       -0.63, 0.63, 0.485, -0.485, 0.706055, 0.706055, -1.29394, -1.29394
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   3, COMPOSITE-GEN, NU2000跨中        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.62914, 0.80912, -0.62659, 0.80021
+             -0.62245, 0.79193, -0.61685, 0.78455, -0.60999, 0.77833
+             -0.60209, 0.77349, -0.59344, 0.77018, -0.58433, 0.76853
+             -0.29517, 0.74338, -0.25872, 0.73677, -0.22411, 0.72355
+             -0.19254, 0.70417, -0.16508, 0.67929, -0.14268, 0.64978
+             -0.1261, 0.61665, -0.11593, 0.58103, -0.1125, 0.54414
+             -0.1125, -0.746496, -0.11557, -0.781407, -0.12468, -0.815246
+             -0.13957, -0.846974, -0.15976, -0.875617, -0.18465, -0.900295
+             -0.21346, -0.920251, -0.24531, -0.934871, -0.47179, -1.01566
+             -0.47976, -1.01931, -0.48696, -1.0243, -0.49318, -1.03047
+             -0.49823, -1.03763, -0.50195, -1.04556, -0.50423, -1.05402
+             -0.505, -1.06275, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, -1.06275, 0.50424, -1.05402
+             0.50196, -1.04556, 0.49824, -1.03763, 0.49319, -1.03047
+             0.48697, -1.0243, 0.47976, -1.01931, 0.4718, -1.01566
+             0.24531, -0.934871, 0.21346, -0.920251, 0.18465, -0.900295
+             0.15977, -0.875617, 0.13958, -0.846974, 0.12469, -0.815246
+             0.11557, -0.781407, 0.1125, -0.746496, 0.1125, 0.54414
+             0.11593, 0.58103, 0.12611, 0.61665, 0.14268, 0.64978
+             0.16508, 0.67929, 0.19254, 0.70417, 0.22412, 0.72355
+             0.25872, 0.73677, 0.29518, 0.74338, 0.58433, 0.76853
+             0.59345, 0.77018, 0.6021, 0.77349, 0.60999, 0.77833
+             0.61686, 0.78455, 0.62246, 0.79193, 0.6266, 0.80021
+             0.62915, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       1.36877, 1.51987, 0.644886, 0.432737, 0.032328, 0.919403, 0.493711
+       0.629999, 0.630001, 0.472623, 1.52738, 0, 0, 6.81, 0, 1.55, 1.52738
+       -0.630001, 0.629999, 0.484999, -0.485001, 0.472623, 0.472623, -1.52738, -1.52738
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   4, COMPOSITE-GEN, NU2000墩顶        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.629142, 0.80912, -0.626598, 0.80021
+             -0.622455, 0.79193, -0.616855, 0.78455, -0.60999, 0.77833
+             -0.602097, 0.77349, -0.593445, 0.77018, -0.584331, 0.76853
+             -0.505, 0.76163, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, 0.76163, 0.584332, 0.76853
+             0.593445, 0.77018, 0.602097, 0.77349, 0.60999, 0.77833
+             0.616855, 0.78455, 0.622455, 0.79193, 0.626598, 0.80021
+             0.629142, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       2.68351, 2.83461, 1.03994, 1.71973, 0.495715, 1.38226, 0.6406
+       0.63, 0.63, 0.706055, 1.29394, 0, 0, 6.81, 0, 1.55, 1.29394
+       -0.63, 0.63, 0.485, -0.485, 0.706055, 0.706055, -1.29394, -1.29394
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+
+
+*SECT-COLOR
+; iSEC, W_R, W_G, W_B, HF_R, HF_G, HF_B, HE_R, HE_G, HE_B, bBLEND, FACT
+    1,   3, 111,  66,  163, 255, 160,    3, 111,  66,  NO, 0.5
+    2,   0,  66,  45,    0, 192, 128,    0,  66,  45,  NO, 0.5
+    3,  38,  57,   0,  128, 192,   0,   38,  57,   0,  NO, 0.5
+    4, 255,   0,   0,    0, 255,   0,    0,   0, 255,  NO, 0.5
+
+*COMP-GEN-SECT-PSC-DESIGN    ; Composite Section for PSC Design
+; SECT, bCompPSC, (Z1, Z2, Z3, t1, t2, t3, TotT)-I, (Z1, Z2, Z3, t1, t2, t3, TotT)-J
+     1, NO,  0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0
+     2, NO,  0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0
+     3, NO,  0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0
+     4, NO,  0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0
+
+
+*DGN-SECT-PSCVALUE    ; Design Section of PSC Value
+; SECT=iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, bBU, bEQ, SNAME2(PSC VAL)   ; 1st line
+;      [STIFF1]                                                                  ; 2nd line
+;      [STIFF2]                                                                  ; 3rd line
+;      [STIFF3]                                                                  ; 4th line
+;      T1, T2, BT, HT                                                            ; 5th line(PSC)
+;      bSHEARCHK, [SCHK], [WT]                                                   ; 6th line(PSC)
+;      SW, GN, CTC, Bc, Tc, Hh, EsEc, DsDc, Ps, Pc                               ; 7th line(COMPOSITE-PC)
+;      OPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Outer Polygon(PLANE)
+;      IPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Inner Polygon(PLANE)
+;      ...
+;      IPOLY=X1, Y1, X2, Y2, ..., Xn, Yn                                         ; Inner Polygon(PLANE)
+;      VERTEX=X1, Y1, X2, Y2, ..., Xn, Yn                                        ; Vertex(General-LINE)
+;      LINE=VI1, VJ1, dTHIK1, iALIGN1                                            ; Line(General-LINE)
+;      ...
+;      LINE=VIn, VJn, dTHIKn, iALIGNn                                            ; Line(General-LINE)
+;      LOOP=COUNT1, LIX11, LIX12, ..., LIXn                                      ; Line(General-LINE)
+;      ...
+;      LOOP=COUNTn, LIXn1, LIXn2, ..., LIXnn                                     ; Line(General-LINE)
+; SECT=iSEC, TYPE, SNAME, [OFFSET2], bSD, bWE, SHAPE, iyVAR, izVAR, bEQ          ; 1st line - TAPERED
+;      [STIFF1-I]                                                                ; 2nd line
+;      [STIFF2-I]                                                                ; 3rd line
+;      [STIFF3-I]                                                                ; 4th line
+;      [STIFF1-J]                                                                ; 5th line
+;      [STIFF2-J]                                                                ; 6th line
+;      [STIFF3-J]                                                                ; 7th line
+;      T1-I, T2-I, BT-I, HT-I, T1-J, T2-J, BT-J, HT-J                            ; 8th line(PSC)
+;      bSHEARCHK, [SCHK-I], [WT-I], [SCHK-J], [WT-J]                             ; 9rd line(PSC)
+;      OPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Outer Polygon(PLANE)
+;      IPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Inner Polygon(PLANE)
+;      ...
+;      IPOLY=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                     ; Inner Polygon(PLANE)
+;      VERTEX=bI, X1, Y1, X2, Y2, ..., Xn, Yn                                    ; Vertex(General-LINE)
+;      LINE=bI, VI1, VJ1, dTHIK1, iALIGN1                                        ; Line(General-LINE)
+;      ...
+;      LINE=bI, VIn, VJn, dTHIKn, iALIGNn                                        ; Line(General-LINE)
+;      LOOP=bI, COUNT1, LIX11, LIX12, ..., LIXn                                  ; Line(General-LINE)
+;      ...
+;      LOOP=bI, COUNTn, LIXn1, LIXn2, ..., LIXnn                                 ; Line(General-LINE)
+; SECT=iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, bBU, bEQ, BPRT              ; 1st line - COMPOSITE-GEN
+;      [PART1]                                                                   ; 2nd line
+;      [PART2]                                                                   ; 3rd line
+;      ...
+; SECT=iSEC, TYPE, SNAME, [OFFSET2], bSD, bWE, SHAPE, iyVAR, izVAR, bEQ, PARTNUM ; 1st line - COMPOSITE-GEN(TAPERED)
+;      [PART1]-I                                                                 ; 2nd line
+;      [PART2]-I                                                                 ; next lines
+;      ...
+;      [PART1]-J                                                                 ; next lines
+;      [PART2]-J                                                                 ; next lines
+;      ...
+; [OFFSET] : OFFSET, iCENT, iREF, iHORZ, HUSER, iVERT, VUSER
+; [OFFSET2]: OFFSET, iCENT, iREF, iHORZ, HUSERI, HUSERJ, iVERT, VUSERI, VUSERJ
+; [STIFF1] : AREA, ASy, ASz, Ixx, Iyy, Izz
+; [STIFF2] ; Cyp, Cym, Czp, Czm, Qyb, Qzb, PERI_OUT, PERI_IN, Cy, Cz
+; [STIFF3] ; Y1, Y2, Y3, Y4, Z1, Z2, Z3, Z4
+; [SCHK]   : Z1, Z3, bAUTO_QY1, QY1, bAUTO_QY2, QY2, bAUTO_QY3, QY3
+; [WT]     : TOR, bAUTO_SHR1, SHR1, bAUTO_SHR2, SHR2, bAUTO_SHR3, SHR3
+; [PART] : PART=part_num
+;        : [STIFF1]
+;        : [STIFF2]
+;        : [STIFF3]
+;        : [STIFF1]                                                            ; [STIFF1] of Part Sum.
+;        : [STIFF2]                                                            ; [STIFF2] of Part Sum.
+;        : [STIFF3]                                                            ; [STIFF3] of Part Sum.
+;        : OPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Outer Polygon(PLANE)
+;        : IPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Inner Polygon(PLANE)
+;        : ...
+;        : IPOLY=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                     ; Inner Polygon(PLANE)
+;        : VERTEX=(bI-Tapered), X1, Y1, X2, Y2, ..., Xn, Yn                    ; Vertex(General-LINE)
+;        : LINE=(bI-Tapered), VI1, VJ1, dTHIK1, iALIGN1                        ; Line(General-LINE)
+;        : ...
+;        : LINE=(bI-Tapered), VIn, VJn, dTHIKn, iALIGNn                        ; Line(General-LINE)
+;        : LOOP=(bI-Tapered), COUNT1, LIX11, LIX12, ..., LIXn                  ; Line(General-LINE)
+;        : ...
+;        : LOOP=(bI-Tapered), COUNTn, LIXn1, LIXn2, ..., LIXnn                 ; Line(General-LINE)
+ SECT=   1, COMPOSITE-GEN, NU2000近墩顶      , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.62914, 0.80912, -0.62659, 0.80021
+             -0.62245, 0.79193, -0.61685, 0.78455, -0.60999, 0.77833
+             -0.60209, 0.77349, -0.59344, 0.77018, -0.58433, 0.76853
+             -0.29517, 0.74338, -0.25872, 0.73677, -0.22411, 0.72355
+             -0.19254, 0.70417, -0.16508, 0.67929, -0.14268, 0.64978
+             -0.1261, 0.61665, -0.11593, 0.58103, -0.1125, 0.54414
+             -0.1125, -0.746496, -0.11557, -0.781407, -0.12468, -0.815246
+             -0.13957, -0.846974, -0.15976, -0.875617, -0.18465, -0.900295
+             -0.21346, -0.920251, -0.24531, -0.934871, -0.47179, -1.01566
+             -0.47976, -1.01931, -0.48696, -1.0243, -0.49318, -1.03047
+             -0.49823, -1.03763, -0.50195, -1.04556, -0.50423, -1.05402
+             -0.505, -1.06275, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, -1.06275, 0.50424, -1.05402
+             0.50196, -1.04556, 0.49824, -1.03763, 0.49319, -1.03047
+             0.48697, -1.0243, 0.47976, -1.01931, 0.4718, -1.01566
+             0.24531, -0.934871, 0.21346, -0.920251, 0.18465, -0.900295
+             0.15977, -0.875617, 0.13958, -0.846974, 0.12469, -0.815246
+             0.11557, -0.781407, 0.1125, -0.746496, 0.1125, 0.54414
+             0.11593, 0.58103, 0.12611, 0.61665, 0.14268, 0.64978
+             0.16508, 0.67929, 0.19254, 0.70417, 0.22412, 0.72355
+             0.25872, 0.73677, 0.29518, 0.74338, 0.58433, 0.76853
+             0.59345, 0.77018, 0.6021, 0.77349, 0.60999, 0.77833
+             0.61686, 0.78455, 0.62246, 0.79193, 0.6266, 0.80021
+             0.62915, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       1.36877, 1.51987, 0.644886, 0.432737, 0.032328, 0.919403, 0.493711
+       0.629999, 0.630001, 0.472623, 1.52738, 0, 0, 6.81, 0, 1.55, 1.52738
+       -0.630001, 0.629999, 0.484999, -0.485001, 0.472623, 0.472623, -1.52738, -1.52738
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   2, COMPOSITE-GEN, NU2000端部        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.629142, 0.80912, -0.626598, 0.80021
+             -0.622455, 0.79193, -0.616855, 0.78455, -0.60999, 0.77833
+             -0.602097, 0.77349, -0.593445, 0.77018, -0.584331, 0.76853
+             -0.505, 0.76163, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, 0.76163, 0.584332, 0.76853
+             0.593445, 0.77018, 0.602097, 0.77349, 0.60999, 0.77833
+             0.616855, 0.78455, 0.622455, 0.79193, 0.626598, 0.80021
+             0.629142, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       2.68351, 2.83461, 1.03994, 1.71973, 0.495715, 1.38226, 0.6406
+       0.63, 0.63, 0.706055, 1.29394, 0, 0, 6.81, 0, 1.55, 1.29394
+       -0.63, 0.63, 0.485, -0.485, 0.706055, 0.706055, -1.29394, -1.29394
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   3, COMPOSITE-GEN, NU2000跨中        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       0.721572, 0.721572, 0.388811, 0.423444, 0.0151667, 0.370983, 0.0300472
+       0.629999, 0.630001, 1.06986, 0.930143, 0, 0, 7.48135, 0, 1.55, 0.930143
+       -0.630001, 0.629999, 0.484999, -0.485001, 1.06986, 1.06986, -0.930143, -0.930143
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.62914, 0.80912, -0.62659, 0.80021
+             -0.62245, 0.79193, -0.61685, 0.78455, -0.60999, 0.77833
+             -0.60209, 0.77349, -0.59344, 0.77018, -0.58433, 0.76853
+             -0.29517, 0.74338, -0.25872, 0.73677, -0.22411, 0.72355
+             -0.19254, 0.70417, -0.16508, 0.67929, -0.14268, 0.64978
+             -0.1261, 0.61665, -0.11593, 0.58103, -0.1125, 0.54414
+             -0.1125, -0.746496, -0.11557, -0.781407, -0.12468, -0.815246
+             -0.13957, -0.846974, -0.15976, -0.875617, -0.18465, -0.900295
+             -0.21346, -0.920251, -0.24531, -0.934871, -0.47179, -1.01566
+             -0.47976, -1.01931, -0.48696, -1.0243, -0.49318, -1.03047
+             -0.49823, -1.03763, -0.50195, -1.04556, -0.50423, -1.05402
+             -0.505, -1.06275, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, -1.06275, 0.50424, -1.05402
+             0.50196, -1.04556, 0.49824, -1.03763, 0.49319, -1.03047
+             0.48697, -1.0243, 0.47976, -1.01931, 0.4718, -1.01566
+             0.24531, -0.934871, 0.21346, -0.920251, 0.18465, -0.900295
+             0.15977, -0.875617, 0.13958, -0.846974, 0.12469, -0.815246
+             0.11557, -0.781407, 0.1125, -0.746496, 0.1125, 0.54414
+             0.11593, 0.58103, 0.12611, 0.61665, 0.14268, 0.64978
+             0.16508, 0.67929, 0.19254, 0.70417, 0.22412, 0.72355
+             0.25872, 0.73677, 0.29518, 0.74338, 0.58433, 0.76853
+             0.59345, 0.77018, 0.6021, 0.77349, 0.60999, 0.77833
+             0.61686, 0.78455, 0.62246, 0.79193, 0.6266, 0.80021
+             0.62915, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       1.36877, 1.51987, 0.644886, 0.432737, 0.032328, 0.919403, 0.493711
+       0.629999, 0.630001, 0.472623, 1.52738, 0, 0, 6.81, 0, 1.55, 1.52738
+       -0.630001, 0.629999, 0.484999, -0.485001, 0.472623, 0.472623, -1.52738, -1.52738
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+ SECT=   4, COMPOSITE-GEN, NU2000墩顶        , CB, 0, 0, 0, 0, 0, 0, YES, NO, CP_G, YES, YES, 1
+       PART=1
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       2.03631, 2.03631, 1.72925, 1.70007, 0.478195, 0.688401, 0.176935
+       0.63, 0.63, 0.991878, 1.00812, 0, 0, 6.4406, 0, 1.55, 1.00812
+       -0.63, 0.63, 0.485, -0.485, 0.991878, 0.991878, -1.00812, -1.00812
+       1, YES, YES, 4.2316e+010, 0.2
+       OPOLY=-0.63, 0.8375, -0.63, 0.81834, -0.629142, 0.80912, -0.626598, 0.80021
+             -0.622455, 0.79193, -0.616855, 0.78455, -0.60999, 0.77833
+             -0.602097, 0.77349, -0.593445, 0.77018, -0.584331, 0.76853
+             -0.505, 0.76163, -0.505, -1.1425, -0.485, -1.1625, 0.485, -1.1625
+             0.505, -1.1425, 0.505, 0.76163, 0.584332, 0.76853
+             0.593445, 0.77018, 0.602097, 0.77349, 0.60999, 0.77833
+             0.616855, 0.78455, 0.622455, 0.79193, 0.626598, 0.80021
+             0.629142, 0.80912, 0.63, 0.81834, 0.63, 0.8375
+       PART=2
+       0.7983, 0.7983, 0.701087, 0.307054, 0.0211306, 0.00504457, 0.571917
+       1.55, 1.55, 0.131756, 0.173244, 0, 0, 6.81, 0, 1.55, 2.19324
+       -1.55, 1.55, 1.55, -1.55, 0.131756, 0.131756, -0.0932441, -0.0932441
+       2.68351, 2.83461, 1.03994, 1.71973, 0.495715, 1.38226, 0.6406
+       0.63, 0.63, 0.706055, 1.29394, 0, 0, 6.81, 0, 1.55, 1.29394
+       -0.63, 0.63, 0.485, -0.485, 0.706055, 0.706055, -1.29394, -1.29394
+       1, NO, YES, 3.43064e+010, 0.2
+       OPOLY=-1.55, 1.1625, -1.55, 0.9375, -0.63, 0.9375, -0.63, 0.8575, 0.63, 0.8575
+             0.63, 0.9375, 1.55, 0.9375, 1.55, 1.1625
+
+
+*SECTION    ; Section
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, [DATA1], [DATA2]                    ; 1st line - DB/USER
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, BLT, D1, ..., D8, iCEL              ; 1st line - VALUE
+;       AREA, ASy, ASz, Ixx, Iyy, Izz                                               ; 2nd line
+;       CyP, CyM, CzP, CzM, QyB, QzB, PERI_OUT, PERI_IN, Cy, Cz                     ; 3rd line
+;       Y1, Y2, Y3, Y4, Z1, Z2, Z3, Z4, Zyy, Zzz                                    ; 4th line
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, ELAST, DEN, POIS, POIC, SF, THERMAL ; 1st line - SRC
+;       D1, D2, [SRC]                                                               ; 2nd line
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, 1, DB, NAME1, NAME2, D1, D2         ; 1st line - COMBINED
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE, 2, D11, D12, D13, D14, D15, D21, D22, D23, D24
+; iSEC, TYPE, SNAME, [OFFSET2], bSD, bWE, SHAPE, iyVAR, izVAR, STYPE                ; 1st line - TAPERED
+;       DB, NAME1, NAME2                                                            ; 2nd line(STYPE=DB)
+;       [DIM1], [DIM2]                                                              ; 2nd line(STYPE=USER)
+;       D11, D12, D13, D14, D15, D16, D17, D18                                      ; 2nd line(STYPE=VALUE)
+;       AREA1, ASy1, ASz1, Ixx1, Iyy1, Izz1                                         ; 3rd line(STYPE=VALUE)
+;       CyP1, CyM1, CzP1, CzM1, QyB1, QzB1, PERI_OUT1, PERI_IN1, Cy1, Cz1           ; 4th line(STYPE=VALUE)
+;       Y11, Y12, Y13, Y14, Z11, Z12, Z13, Z14, Zyy1, Zyy2                          ; 5th line(STYPE=VALUE)
+;       D21, D22, D23, D24, D25, D26, D27, D28                                      ; 6th line(STYPE=VALUE)
+;       AREA2, ASy2, ASz2, Ixx2, Iyy2, Izz2                                         ; 7th line(STYPE=VALUE)
+;       CyP2, CyM2, CzP2, CzM2, QyB2, QzB2, PERI_OUT2, PERI_IN2, Cy2, Cz2           ; 8th line(STYPE=VALUE)
+;       Y21, Y22, Y23, Y24, Z21, Z22, Z23, Z24, Zyy2, Zzz2                          ; 9th line(STYPE=VALUE)
+;       OPT1, OPT2, [JOINT]                                                         ; 2nd line(STYPE=PSC)
+;       ELAST, DEN, POIS, POIC, THERMAL                                             ; 2nd line(STYPE=PSC-CMPW)
+;       bSHEARCHK, [SCHK-I], [SCHK-J], [WT-I], [WT-J], WI, WJ, bSYM, bSIDEHOLE      ; 3rd line(STYPE=PSC)
+;       bSHEARCHK, bSYM, bHUNCH, [CMPWEB-I], [CMPWEB-J]                             ; 3rd line(STYPE=PSC-CMPW)
+;       bUSERDEFMESHSIZE, MESHSIZE, bUSERINPSTIFF, [STIFF-I], [STIFF-J]             ; 4th line(STYPE=PSC)
+;       [SIZE-A]-i                                                                  ; 5th line(STYPE=PSC)
+;       [SIZE-B]-i                                                                  ; 6th line(STYPE=PSC)
+;       [SIZE-C]-i                                                                  ; 7th line(STYPE=PSC)
+;       [SIZE-D]-i                                                                  ; 8th line(STYPE=PSC)
+;       [SIZE-A]-j                                                                  ; 9th line(STYPE=PSC)
+;       [SIZE-B]-j                                                                  ; 10th line(STYPE=PSC)
+;       [SIZE-C]-j                                                                  ; 11th line(STYPE=PSC)
+;       [SIZE-D]-j                                                                  ; 12th line(STYPE=PSC)
+;       GN, CTC, Bc, Tc, Hh, EsEc, DsDc, Ps, Pc, bMULTI, EsEc-L, EsEc-S             ; 2nd line(STYPE=CMP-B/I)
+;       SW_i, Hw_i, tw_i, B_i, Bf1_i, tf1_i, B2_i, Bf2_i, tf2_i                     ; 3rd line(STYPE=CMP-B/I)
+;       SW_j, Hw_j, tw_j, B_j, Bf1_j, tf1_j, B2_j, Bf2_j, tf2_j                     ; 4th line(STYPE=CMP-B/I)
+;       N1, N2, Hr, Hr2, tr1, tr2                                                   ; 5th line(STYPE=CMP-B)
+;       GN, CTC, Bc, Tc, Hh, EgdEsb, DgdDsb, Pgd, Psb, bSYM, SW_i, SW_j             ; 2nd line(STYPE=CMP-CI/CT)
+;       OPT1, OPT2, [JOINT]                                                         ; 3rd line(STYPE=CMP-CI/CT)
+;       [SIZE-A]-i                                                                  ; 4th line(STYPE=CMP-CI/CT)
+;       [SIZE-B]-i                                                                  ; 5th line(STYPE=CMP-CI/CT)
+;       [SIZE-C]-i                                                                  ; 6th line(STYPE=CMP-CI/CT)
+;       [SIZE-D]-i                                                                  ; 7th line(STYPE=CMP-CI/CT)
+;       [SIZE-A]-j                                                                  ; 8th line(STYPE=CMP-CI/CT)
+;       [SIZE-B]-j                                                                  ; 9th line(STYPE=CMP-CI/CT)
+;       [SIZE-C]-j                                                                  ; 10th line(STYPE=CMP-CI/CT)
+;       [SIZE-D]-j                                                                  ; 11th line(STYPE=CMP-CI/CT)
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, STYPE1, STYPE2                             ; 1st line - CONSTRUCT
+;       SHAPE, ...(same with other type data from shape)                            ; Before (STYPE1)
+;       SHAPE, ...(same with other type data from shape)                            ; After  (STYPE2)
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE                                      ; 1st line - COMPOSITE-B
+;       Hw, tw, B1, Bf1, tf1, B2, Bf2, tf2                                          ; 2nd line
+;       [SHAPE-NUM], [STIFF-SHAPE], [STIFF-POS] (1~4)                               ; 3rd line
+;       SW, GN, CTC, Bc, Tc, Hh, EsEc, DsDc, Ps, Pc, TsTc, bMulti, Elong, Esh       ; 4th line
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE                                      ; 1st line - COMPOSITE-I
+;       Hw, tw, B1, tf1, B2, tf2                                                    ; 2nd line
+;       [SHAPE-NUM], [STIFF-SHAPE], [STIFF-POS] (1~2)                               ; 3rd line
+;       SW, GN, CTC, Bc, Tc, Hh, EsEc, DsDc, Ps, Pc, TsTc, bMulti, Elong, Esh       ; 4th line
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE                                      ; 1st line - COMPOSITE-TUB
+;       Hw, tw, B1, Bf1, tf1, B2, Bf2, tf2, Bf3, tfp                                ; 2nd line
+;       [SHAPE-NUM], [STIFF-SHAPE], [STIFF-POS] (1~3)                               ; 3rd line
+;       SW, GN, CTC, Bc, Tc, Hh, EsEc, DsDc, Ps, Pc, TsTc, bMulti, Elong, Esh       ; 4th line
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE                                      ; 1st line - COMPOSITE-CI/CT
+;       OPT1, OPT2, [JOINT]                                                         ; 2nd line
+;       [SIZE-A]                                                                    ; 3rd line
+;       [SIZE-B]                                                                    ; 4th line
+;       [SIZE-C]                                                                    ; 5th line
+;       [SIZE-D]                                                                    ; 6th line
+;       SW, GN, CTC, Bc, Tc, Hh, EgdEsb, DgdDsb, Pgd, Psb                           ; 7th line
+; iSEC, TYPE, SNAME, [OFFSET], bSD, bWE, SHAPE                                      ; 1st line - PSC
+;       OPT1, OPT2, [JOINT]                                                         ; 2nd line
+;       bSHEARCHK, [SCHK], [WT], WIDTH, bSYM, bSIDEHOLE                             ; 3rd line
+;       bUSERDEFMESHSIZE, MESHSIZE, bUSERINPSTIFF, [STIFF]                          ; 4th line
+;       bWE, [WARPING POINT]-i, [WARPING POINT]-j                                   ; 5th line
+;       [SIZE-A]                                                                    ; 6th line
+;       [SIZE-B]                                                                    ; 7th line
+;       [SIZE-C]                                                                    ; 8th line
+;       [SIZE-D]                                                                    ; 9th line
+; [DATA1] : 1, DB, NAME or 2, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10
+; [DATA2] : CCSHAPE or iCEL or iN1, iN2
+; [SRC]  : 1, DB, NAME1, NAME2 or 2, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, iN1, iN2
+; [DIM1], [DIM2] : D1, D2, D3, D4, D5, D6, D7, D8
+; [OFFSET] : OFFSET, iCENT, iREF, iHORZ, HUSER, iVERT, VUSER
+; [OFFSET2]: OFFSET, iCENT, iREF, iHORZ, HUSERI, HUSERJ, iVERT, VUSERI, VUSERJ
+; [SHAPE-NUM]: SHAPE-NUM, POS, STIFF-NUM1, STIFF-NUM2, STIFF-NUM3, STIFF-NUM4
+; [STIFF-SHAPE]: SHAPE-NUM, for(SHAPE-NUM) { NAME, SIZE1~8 }
+; [STIFF-POS]: STIFF-NUM, for(STIFF-NUM) { SPACING, iSHAPE, bCALC }
+; [JOINT]  :  8(1CELL, 2CELL), 13(3CELL),  9(PSCM),  8(PSCH), 9(PSCT),  2(PSCB), 0(nCELL),  2(nCEL2)
+; [SIZE-A] :  6(1CELL, 2CELL), 10(3CELL), 10(PSCM),  6(PSCH), 8(PSCT), 10(PSCB), 5(nCELL), 11(nCEL2)
+; [SIZE-B] :  6(1CELL, 2CELL), 12(3CELL),  6(PSCM),  6(PSCH), 8(PSCT),  6(PSCB), 8(nCELL), 18(nCEL2)
+; [SIZE-C] : 10(1CELL, 2CELL), 13(3CELL),  9(PSCM), 10(PSCH), 7(PSCT),  8(PSCB), 0(nCELL), 11(nCEL2)
+; [SIZE-D] :  8(1CELL, 2CELL), 13(3CELL),  6(PSCM),  7(PSCH), 8(PSCT),  5(PSCB), 0(nCELL), 18(nCEL2)
+; [STIFF]  : AREA, ASy, ASz, Ixx, Iyy, Izz
+; [SCHK]   : bAUTO_Z1, Z1, bAUTO_Z3, Z3
+; [WT]     : bAUTO_TOR, TOR, bAUTO_SHR1, SHR1, bAUTO_SHR2, SHR2, bAUTO_SHR3, SHR3
+; [CMPWEB] : EFD, LRF, A, B, H, T
+; [WARPING POINT] : nWarpingCheck, X1,X2,X3,X4,X5,X6, Y1,Y2,Y3,Y4,Y5,Y6
+    5, DBUSER    , 中隔板            , CB, 0, 1, 0, 0, 1, -0.55, YES, NO, SB , 2, 1.04, 0.25, 0, 0, 0, 0, 0, 0, 0, 0
+    6, DBUSER    , 端隔板            , CB, 0, 1, 0, 0, 1, -0.1, YES, NO, SB , 2, 1.5, 0.65, 0, 0, 0, 0, 0, 0, 0, 0
+
+
+*TENDON-GROUP    ; Tendon Group
+; NAME
+ 先张束
+ 后张束
+
+*TDN-PROPERTY    ; Tendon Property
+; NAME, TYPE, MATL, AREA, DIA, RM, RC, FF, WF, US, YS, LT, ASB, ASE, bBONDED, ALPHA, \ 
+;       bOSRF, FT, LR, FPK, ACHANGE, bRELAX, TDMFK, WobbleType, AngleDisp
+   S6, INTERNAL, 2, 0.00084, 0.0327035, 8, 5, 0, 0, 1.86326e+009, 1.56906e+009, PRE, 0, 0, YES, 0, , , ,, 0, NO, 0, 0, 0
+   S2, INTERNAL, 2, 0.00028, 0.0188814, 8, 5, 0, 0, 1.86326e+009, 1.56906e+009, PRE, 0, 0, YES, 0, , , ,, 0, NO, 0, 0, 0
+   S4, INTERNAL, 2, 0.00056, 0.0267023, 8, 5, 0, 0, 1.86326e+009, 1.56906e+009, PRE, 0, 0, YES, 0, , , ,, 0, NO, 0, 0, 0
+   S8, INTERNAL, 2, 0.00112, 0.0377628, 8, 5, 0, 0, 1.86326e+009, 1.56906e+009, PRE, 0, 0, YES, 0, , , ,, 0, NO, 0, 0, 0
+   P12, INTERNAL, 2, 0.001668, 0.08, 0, 45, 0.23, 0.0015, 1.86326e+009, 1.56906e+009, POST, 0.006, 0.006, YES, 0, , , ,, 0, YES, 1, 0, 0.005
+   P8, INTERNAL, 2, 0.00112, 0.07, 8, 5, 0.23, 0.00115, 1.86326e+009, 1.56906e+009, POST, 0.006, 0.006, YES, 0, , , ,, 0, NO, 0, 0, 0.005
+
+
+*STLDCASE    ; Static Load Cases
+; LCNAME, LCTYPE, DESC
+   自重 , USER,
+   先张 , USER,
+   后张 , USER,
+   二期荷载, USER,
+   跨中湿重, USER,
+   墩顶湿重, USER,
+   总体升温, USER, 
+   总体降温, USER, 
+   梯度升温, USER, 
+   梯度降温, USER, 
+   WS   , USER, 
+   WL   , USER, 
+
+
+*NL-PROP    ; General Link Property
+; NAME, APPTYPE, TYPE, TW, TWRATIO_I, bUSEMASS, TM, TMRATIO_I, bSSL, DY, DZ, SIESKEY(if APPTYPE=2), DESC
+; bLDX, DX, EFFDAMP, bNDX, [NL_PROP]
+; bLDY, DY, EFFDAMP, bNDY, [NL_PROP]
+; bLDZ, DZ, EFFDAMP, bNDZ, [NL_PROP]
+; bLRX, RX, EFFDAMP, bNRX, [NL_PROP]
+; bLRY, RY, EFFDAMP, bNRY, [NL_PROP]
+; bLRZ, RZ, EFFDAMP, bNRZ, [NL_PROP]
+; [NL_PROP] : DSTIFF, DAMP, DEXP, bRIGDBR, BSTIFF, REFV                                  ; Visco-elastic Damper Type
+; [NL_PROP] : STIFF, OPEN                                                                ; Gap Type or Hook Type
+; [NL_PROP] : STIFF, YSTR, PYS_RATIO, YEXP, PA, PB                                       ; Hysteretic System Type
+; [NL_PROP] : STIFF, YSTR, PYS_RATIO, PA, PB                                             ; Lead Rubber Bearing Type
+; [NL_PROP] : STIFF, FCS, FCF, RP, RADIUS, PA, PB                                        ; Friction Pendulum System Type
+; [NL_PROP] : SYM, STIFF(1~4), FCS(1~4), FCF(1~4), RP(1~4), RADIUS(1~4), STOPDIST(1~4)   ; Triple Friction Pendulum System Type
+  HDR720, ELEMENT, SPG,  0, 0.5, NO, 0, 0.5,  NO, 0.5, 0.5, 0, 0, 
+    YES, 5e+008, 0, NO
+    YES, 3.47e+006, 0, NO
+    YES, 3.47e+006, 0, NO
+    NO, 0, 0, NO
+    NO, 0, 0, NO
+    NO, 0, 0, NO
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+*USE-STLD, 自重
+
+*SELFWEIGHT    ; Self Weight
+; X, Y, Z, GROUP
+0, 0, -1, 自重
+
+*USE-STLD, 总体升温
+
+*SYSTEMPER    ; System Temperature
+; SYSTEMP, GROUP
+12, 
+
+; End of data for load case [总体升温] -------------------------
+
+*USE-STLD, 总体降温
+
+*SYSTEMPER    ; System Temperature
+; SYSTEMP, GROUP
+-12, 
+
+; End of data for load case [总体降温] -------------------------
+
+*NODE
+10100,-361.738167,-74.963925,12.142912
+10101,-361.233256,-74.343746,12.163959
+10102,-356.218438,-68.184081,12.372995
+10103,-351.484896,-62.369904,12.570308
+10104,-346.751354,-56.555728,12.767620
+10105,-341.736536,-50.396063,12.976657
+10106,-341.231625,-49.775884,12.997703
+10200,-360.012652,-76.368633,12.098415
+10201,-359.507741,-75.748454,12.119462
+10202,-354.492960,-69.588834,12.328497
+10203,-349.759417,-63.774658,12.525809
+10204,-345.025874,-57.960482,12.723121
+10205,-340.011093,-51.800862,12.932156
+10206,-339.506182,-51.180684,12.953203
+10300,-358.287131,-77.773347,12.053918
+10301,-357.782220,-77.153168,12.074964
+10302,-352.767475,-70.993593,12.283998
+10303,-348.033933,-65.179416,12.481310
+10304,-343.300391,-59.365240,12.678622
+10305,-338.285646,-53.205665,12.887655
+10306,-337.780735,-52.585486,12.908702
+10400,-176.137665,22.944285,13.550183
+10401,-175.353148,22.789229,13.572331
+10402,-170.470468,21.824189,13.710178
+10403,-163.115621,20.370535,13.917818
+10404,-155.760774,18.916882,14.125457
+10405,-148.405926,17.463228,14.333097
+10406,-141.051079,16.009575,14.540737
+10407,-136.168399,15.044535,14.678583
+10408,-135.383882,14.889478,14.700732
+10500,-175.764040,25.178257,13.604571
+10501,-174.981822,25.011936,13.626296
+10502,-170.096486,23.973178,13.761978
+10503,-162.763191,22.413916,13.965648
+10504,-155.429895,20.854654,14.169318
+10505,-148.096600,19.295392,14.372988
+10506,-140.763305,17.736130,14.576658
+10507,-135.877969,16.697372,14.712340
+10508,-135.095751,16.531050,14.734065
+10600,-175.390415,27.412229,13.658961
+10601,-174.610653,27.234698,13.680258
+10602,-169.719560,26.121128,13.813849
+10603,-162.409289,24.456777,14.013514
+10604,-155.099017,22.792425,14.213179
+10605,-147.788746,21.128074,14.412845
+10606,-140.478474,19.463723,14.612510
+10607,-135.587382,18.350153,14.746101
+10608,-134.807619,18.172622,14.767398
+10700,-134.700040,15.777648,14.735152
+10701,-133.912206,15.640477,14.757565
+10702,-127.224222,14.476019,14.947833
+10703,-119.838283,13.190038,15.157956
+10704,-112.452343,11.904057,15.368080
+10705,-105.066404,10.618077,15.578204
+10706,-97.680464,9.332096,15.788327
+10707,-90.204647,8.030467,16.001008
+10708,-89.958449,7.987601,16.008012
+10800,-134.238800,18.405473,14.788512
+10801,-133.451558,18.264931,14.810856
+10802,-126.768583,17.071853,15.000543
+10803,-119.388198,15.754270,15.210025
+10804,-112.007812,14.436687,15.419507
+10805,-104.627427,13.119103,15.628989
+10806,-97.247041,11.801520,15.838470
+10807,-89.776825,10.467900,16.050502
+10808,-89.530812,10.423980,16.057485
+20100,-367.515743,-70.260510,12.443918
+20101,-367.011564,-69.641230,12.491832
+20102,-361.989031,-63.472088,12.969140
+20103,-357.262350,-57.666339,13.418332
+20104,-352.535669,-51.860591,13.867525
+20105,-347.513136,-45.691449,14.344833
+20106,-347.008956,-45.072169,14.392747
+20200,-365.790229,-71.665218,12.399423
+20201,-365.286050,-71.045939,12.447337
+20202,-360.263552,-64.876842,12.924641
+20203,-355.536870,-59.071094,13.373833
+20204,-350.810189,-53.265346,13.823026
+20205,-345.787691,-47.096250,14.300330
+20206,-345.283512,-46.476970,14.348244
+20300,-364.064715,-73.069927,12.354928
+20301,-363.560535,-72.450647,12.402841
+20302,-358.538073,-66.281596,12.880142
+20303,-353.811391,-60.475849,13.329334
+20304,-349.084708,-54.670101,13.778526
+20305,-344.062246,-48.501050,14.255827
+20306,-343.558067,-47.881771,14.303741
+20400,-161.782606,35.595174,22.753193
+20401,-161.000025,35.429559,22.741439
+20402,-154.596943,34.074493,22.645265
+20403,-147.260244,32.521848,22.535069
+20404,-139.923545,30.969203,22.424873
+20405,-132.737882,29.448522,22.316945
+20406,-132.493326,29.396767,22.313272
+20500,-161.321942,37.771964,22.797693
+20501,-160.539361,37.606349,22.785939
+20502,-154.136279,36.251283,22.689765
+20503,-146.799580,34.698638,22.579569
+20504,-139.462881,33.145993,22.469373
+20505,-132.277218,31.625311,22.361445
+20506,-132.032662,31.573556,22.357772
+20600,-160.861278,39.948754,22.842193
+20601,-160.078697,39.783139,22.830439
+20602,-153.675615,38.428072,22.734265
+20603,-146.338916,36.875427,22.624069
+20604,-139.002218,35.322782,22.513873
+20605,-131.816554,33.802100,22.405945
+20606,-131.571998,33.750345,22.402272
+20700,-132.248716,29.345001,22.309598
+20701,-125.154224,27.843613,22.203039
+20702,-117.817525,26.290968,22.092843
+20703,-110.480826,24.738324,21.982647
+20704,-103.144128,23.185679,21.872450
+20705,-95.807429,21.633034,21.762254
+20706,-88.712937,20.131647,21.655696
+20707,-88.468380,20.079892,21.652022
+20800,-131.788052,31.521790,22.354098
+20801,-124.693560,30.020403,22.247539
+20802,-117.356861,28.467758,22.137343
+20803,-110.020163,26.915113,22.027147
+20804,-102.683464,25.362468,21.916950
+20805,-95.346765,23.809823,21.806754
+20806,-88.252273,22.308435,21.700196
+20807,-88.007716,22.256680,21.696522
+20900,-131.327388,33.698579,22.398598
+20901,-124.232896,32.197192,22.292039
+20902,-116.896198,30.644547,22.181843
+20903,-109.559499,29.091901,22.071647
+20904,-102.222800,27.539256,21.961450
+20905,-94.886101,25.986611,21.851254
+20906,-87.791609,24.485224,21.744696
+20907,-87.547052,24.433469,21.741022
+21000,-88.223771,20.028126,21.648348
+21001,-80.798344,18.456704,21.536819
+21002,-73.461645,16.904059,21.426623
+21003,-66.124946,15.351414,21.316427
+21004,-58.788247,13.798769,21.206230
+21005,-51.451548,12.246124,21.096034
+21006,-44.026122,10.674702,20.984505
+21007,-43.781565,10.622947,20.980832
+21100,-87.763107,22.204914,21.692848
+21101,-80.359004,20.638005,21.581640
+21102,-73.022305,19.085360,21.471443
+21103,-65.685606,17.532715,21.361247
+21104,-58.348907,15.980070,21.251051
+21105,-51.012208,14.427425,21.140854
+21106,-43.608105,12.860515,21.029646
+21107,-43.363548,12.808760,21.025972
+21200,-87.302443,24.381703,21.737348
+21201,-79.919663,22.819306,21.626460
+21202,-72.582964,21.266661,21.516264
+21203,-65.246265,19.714016,21.406067
+21204,-57.909567,18.161370,21.295871
+21205,-50.572868,16.608725,21.185675
+21206,-43.190088,15.046328,21.074786
+21207,-42.945531,14.994573,21.071113
+21300,-43.536862,10.571161,20.977157
+21301,-36.432750,9.067738,20.878447
+21302,-29.095937,7.515069,20.776504
+21303,-21.759124,5.962400,20.674561
+21304,-14.422311,4.409731,20.572618
+21305,-7.085498,2.857062,20.470675
+21306,-0.763979,1.519257,20.382839
+21307,0.018614,1.353639,20.371965
+21400,-43.118845,12.756974,21.022297
+21401,-35.995087,11.249393,20.923304
+21402,-28.658274,9.696724,20.821350
+21403,-21.321461,8.144055,20.719396
+21404,-13.984648,6.591386,20.617442
+21405,-6.647835,5.038717,20.515488
+21406,-0.306670,3.696754,20.427369
+21407,0.475923,3.531136,20.416494
+21500,-42.700828,14.942788,21.067438
+21501,-35.557423,13.431049,20.968161
+21502,-28.220610,11.878379,20.866196
+21503,-20.883798,10.325710,20.764231
+21504,-13.546985,8.773041,20.662266
+21505,-6.210172,7.220372,20.560301
+21506,0.150639,5.874251,20.471900
+21507,0.933233,5.708633,20.461024
+21600,0.537624,1.294910,20.368560
+21601,1.316377,1.111763,20.367656
+21602,5.167120,0.206146,20.363190
+21603,12.467930,-1.510857,20.354721
+21604,19.768740,-3.227859,20.346252
+21605,27.069550,-4.944862,20.337783
+21606,34.370360,-6.661865,20.329314
+21607,38.999856,-7.750628,20.323944
+21608,39.243217,-7.807862,20.323662
+21700,1.209453,4.493851,20.433976
+21701,1.985648,4.300149,20.432856
+21702,5.852914,3.335065,20.427274
+21703,13.129742,1.519118,20.416771
+21704,20.406570,-0.296830,20.406268
+21705,27.683398,-2.112777,20.395765
+21706,34.960226,-3.928724,20.385262
+21707,39.603687,-5.087510,20.378560
+21708,39.846248,-5.148041,20.378210
+21800,39.486593,-7.865099,20.327294
+21801,44.117543,-8.954204,20.396437
+21802,51.417587,-10.671027,20.505431
+21803,58.717630,-12.387849,20.614425
+21804,66.017674,-14.104672,20.723419
+21805,73.317718,-15.821494,20.832413
+21806,77.948668,-16.910600,20.901556
+21807,78.192003,-16.967827,20.905189
+21900,40.088923,-5.208601,20.381771
+21901,44.725413,-6.365647,20.449852
+21902,52.001510,-8.181412,20.556694
+21903,59.277606,-9.997177,20.663535
+21904,66.553703,-11.812942,20.770377
+21905,73.829800,-13.628706,20.877218
+21906,78.466290,-14.785752,20.945300
+21907,78.708827,-14.846278,20.948861
+22000,78.435404,-17.025070,20.912740
+22001,83.071473,-18.115380,21.055641
+22002,90.369004,-19.831611,21.280579
+22003,97.666534,-21.547843,21.505517
+22004,104.964065,-23.264074,21.730455
+22005,112.261596,-24.980305,21.955393
+22006,116.119261,-25.887550,22.074302
+22007,116.897664,-26.070615,22.098295
+22100,78.951420,-14.906817,20.956338
+22101,83.584607,-16.063039,21.098234
+22102,90.858232,-17.878187,21.320997
+22103,98.131856,-19.693335,21.543759
+22104,105.405481,-21.508483,21.766521
+22105,112.679106,-23.323631,21.989283
+22106,116.536439,-24.286236,22.107418
+22107,117.312292,-24.479852,22.131180
+30100,-183.996811,160.422750,11.647805
+30101,-183.492492,161.043004,11.617029
+30102,-176.863543,169.195851,11.212490
+30103,-172.135554,175.010735,10.923959
+30104,-167.407565,180.825618,10.635429
+30105,-160.778616,188.978465,10.230890
+30106,-160.274297,189.598719,10.200113
+30200,-182.226807,159.006140,11.670700
+30201,-181.723171,159.626971,11.640367
+30202,-175.109409,167.779745,11.242031
+30203,-170.387825,173.600035,10.957657
+30204,-165.666241,179.420325,10.673284
+30205,-159.052479,187.573100,10.274948
+30206,-158.548844,188.193931,10.244614
+30300,-180.460137,157.592198,11.693558
+30301,-179.957115,158.213548,11.663670
+30302,-173.357591,166.365513,11.271541
+30303,-168.641763,172.190670,10.991337
+30304,-163.925934,178.015826,10.711133
+30305,-157.326410,186.167791,10.319004
+30306,-156.823388,186.789141,10.289116
+30400,-174.951412,29.678425,13.815138
+30401,-174.174430,29.488864,13.834258
+30402,-169.303862,28.300585,13.954109
+30403,-162.019656,26.523447,14.133354
+30404,-154.735450,24.746310,14.312598
+30405,-147.451244,22.969172,14.491842
+30406,-140.167039,21.192035,14.671087
+30407,-135.296470,20.003755,14.790938
+30408,-134.519488,19.814194,14.810058
+30500,-174.512409,31.944622,13.705179
+30501,-173.738502,31.743103,13.726582
+30502,-168.882639,30.478676,13.860874
+30503,-161.627261,28.589435,14.061526
+30504,-154.371883,26.700194,14.262179
+30505,-147.116505,24.810953,14.462831
+30506,-139.861127,22.921712,14.663483
+30507,-135.005264,21.657285,14.797775
+30508,-134.231357,21.455766,14.819178
+30600,-173.080387,34.609501,13.576184
+30601,-172.313262,34.383851,13.600725
+30602,-167.895394,33.084339,13.742053
+30603,-160.703600,30.968879,13.972119
+30604,-153.511806,28.853419,14.202186
+30605,-146.320012,26.737959,14.432252
+30606,-139.128218,24.622499,14.662319
+30607,-134.710350,23.322987,14.803647
+30608,-133.943226,23.097338,14.828187
+30700,-171.648364,37.274379,13.447280
+30701,-170.889106,37.023870,13.475054
+30702,-166.887830,35.703692,13.621422
+30703,-159.769779,33.355168,13.881802
+30704,-152.651729,31.006644,14.142182
+30705,-145.533679,28.658121,14.402563
+30706,-138.415629,26.309597,14.662943
+30707,-134.414353,24.989419,14.809311
+30708,-133.655094,24.738910,14.837085
+30800,-133.777560,21.033299,14.832336
+30801,-132.990929,20.889393,14.854780
+30802,-126.312582,19.667656,15.045331
+30803,-118.937923,18.318535,15.255749
+30804,-111.563264,16.969414,15.466168
+30805,-104.188605,15.620293,15.676586
+30806,-96.813946,14.271173,15.887004
+30807,-89.348968,12.905529,16.100000
+30808,-89.103146,12.860558,16.107014
+30900,-133.316320,23.661125,14.848480
+30901,-132.530328,23.513863,14.871514
+30902,-125.856050,22.263389,15.067107
+30903,-118.487374,20.882814,15.283049
+30904,-111.118699,19.502239,15.498991
+30905,-103.750023,18.121665,15.714933
+30906,-96.381347,16.741090,15.930875
+30907,-88.921077,15.343354,16.149502
+30908,-88.675455,15.297335,16.156700
+40100,-128.208025,46.235735,19.630732
+40101,-127.437747,46.020322,19.647143
+40102,-121.196188,44.274827,19.780121
+40103,-113.974834,42.255326,19.933974
+40104,-106.753481,40.235825,20.087827
+40105,-99.532127,38.216325,20.241680
+40106,-92.310774,36.196824,20.395533
+40107,-85.298937,34.235916,20.544922
+40108,-85.058225,34.168599,20.550050
+40200,-127.534753,48.465421,19.640798
+40201,-126.764662,48.249392,19.657870
+40202,-120.547896,46.505439,19.795688
+40203,-113.328294,44.480166,19.955738
+40204,-106.108692,42.454893,20.115788
+40205,-98.889090,40.429620,20.275838
+40206,-91.669488,38.404347,20.435888
+40207,-84.682631,36.444364,20.590778
+40208,-84.441978,36.376855,20.596113
+40300,-126.861482,50.695107,19.650877
+40301,-126.091579,50.478461,19.668611
+40302,-119.899580,48.736067,19.811240
+40303,-112.681743,46.705008,19.977498
+40304,-105.463907,44.673949,20.143755
+40305,-98.246071,42.642890,20.310013
+40306,-91.028235,40.611831,20.476271
+40307,-84.066333,38.652790,20.636634
+40308,-83.825738,38.585088,20.642176
+40400,-84.817412,34.101254,20.551514
+40401,-77.835134,32.148612,20.585985
+40402,-70.612342,30.128709,20.621644
+40403,-63.389551,28.108806,20.657302
+40404,-56.166759,26.088903,20.692961
+40405,-48.943967,24.069000,20.728620
+40406,-41.961690,22.116359,20.763091
+40407,-41.720930,22.049029,20.764279
+40500,-84.201215,36.309315,20.597362
+40501,-77.220495,34.351055,20.631717
+40502,-69.999329,32.325343,20.667255
+40503,-62.778164,30.299631,20.702793
+40504,-55.556998,28.273920,20.738331
+40505,-48.335833,26.248208,20.773869
+40506,-41.355113,24.289947,20.808224
+40507,-41.114408,24.222424,20.809408
+40600,-83.585024,38.517353,20.643210
+40601,-76.605857,36.553454,20.677448
+40602,-69.386327,34.521918,20.712865
+40603,-62.166798,32.490382,20.748282
+40604,-54.947268,30.458847,20.783699
+40605,-47.727738,28.427311,20.819116
+40606,-40.748571,26.463412,20.853354
+40607,-40.507920,26.395695,20.854534
+40700,-41.480165,21.981697,20.761253
+40701,-34.280895,19.968372,20.685769
+40702,-27.058390,17.948549,20.610042
+40703,-19.835885,15.928726,20.534314
+40704,-12.613380,13.908904,20.458586
+40705,-5.390874,11.889081,20.382859
+40706,1.037995,10.091204,20.315452
+40707,1.808395,9.875756,20.307375
+40800,-40.873696,24.154898,20.806378
+40801,-33.745750,22.155337,20.731473
+40802,-26.524873,20.129706,20.655591
+40803,-19.303996,18.104076,20.579709
+40804,-12.083119,16.078445,20.503827
+40805,-4.862242,14.052814,20.427945
+40806,1.495478,12.269320,20.361134
+40807,2.265705,12.053253,20.353040
+40900,-40.267262,26.327975,20.851500
+40901,-33.210603,24.342270,20.777177
+40902,-25.991363,22.310816,20.701142
+40903,-18.772124,20.279362,20.625107
+40904,-11.552885,18.247909,20.549072
+40905,-4.333646,16.216455,20.473036
+40906,1.952962,14.447438,20.406824
+40907,2.723014,14.230750,20.398713
+41000,1.881282,7.692791,20.260102
+41001,2.654783,7.488596,20.259657
+41002,6.541200,6.462628,20.257419
+41003,13.792773,4.548298,20.253245
+41004,21.044347,2.633968,20.249070
+41005,28.295921,0.719638,20.244896
+41006,35.547495,-1.194691,20.240721
+41007,40.207413,-2.424855,20.238039
+41008,40.449132,-2.488666,20.237900
+41100,2.553111,10.891732,20.327138
+41101,3.323783,10.677109,20.326423
+41102,7.231961,9.588726,20.322800
+41103,14.457017,7.576630,20.316101
+41104,21.682072,5.564535,20.309402
+41105,28.907128,3.552440,20.302703
+41106,36.132183,1.540344,20.296005
+41107,40.811034,0.237338,20.291667
+41108,41.051869,0.170268,20.291443
+41200,3.224940,14.090673,20.394190
+41201,3.992652,13.865692,20.393207
+41202,7.925134,12.713264,20.388172
+41203,15.122440,10.604067,20.378957
+41204,22.319745,8.494871,20.369741
+41205,29.517050,6.385675,20.360526
+41206,36.714356,4.276478,20.351310
+41207,41.414550,2.899069,20.345292
+41208,41.654461,2.828763,20.344985
+41300,40.691150,-2.552555,20.241600
+41301,45.335910,-3.778717,20.312624
+41302,52.586693,-5.692838,20.423497
+41303,59.837475,-7.606959,20.534370
+41304,67.088258,-9.521080,20.645244
+41305,74.339040,-11.435201,20.756117
+41306,78.983801,-12.661363,20.827141
+41307,79.225493,-12.725167,20.830837
+41400,41.293275,0.103039,20.295069
+41401,45.948634,-1.193425,20.365027
+41402,53.172936,-3.205310,20.473590
+41403,60.397237,-5.217196,20.582153
+41404,67.621539,-7.229081,20.690716
+41405,74.845840,-9.240966,20.799279
+41406,79.501200,-10.537431,20.869237
+41407,79.742010,-10.604494,20.872856
+41500,41.895298,2.758185,20.348536
+41501,46.563715,1.390088,20.417453
+41502,53.760304,-0.718898,20.523692
+41503,60.956893,-2.827885,20.629931
+41504,68.153482,-4.936871,20.736170
+41505,75.350070,-7.045857,20.842408
+41506,80.018488,-8.413954,20.911325
+41507,80.258374,-8.484254,20.914867
+41600,79.467328,-12.789008,20.838369
+41601,84.100464,-14.012102,20.981771
+41602,91.348794,-15.925575,21.206116
+41603,98.597124,-17.839049,21.430461
+41604,105.845454,-19.752522,21.654806
+41605,113.093784,-21.665996,21.879151
+41606,116.953765,-22.684985,21.998622
+41607,117.726920,-22.889089,22.022552
+41700,79.983127,-10.671642,20.880321
+41701,84.618565,-11.962558,21.022951
+41702,91.840451,-13.973771,21.245165
+41703,99.062338,-15.984984,21.467379
+41704,106.284224,-17.996197,21.689593
+41705,113.506111,-20.007410,21.911806
+41706,117.371214,-21.083797,22.030734
+41707,118.141549,-21.298326,22.054437
+41800,80.498819,-8.554717,20.922266
+41801,85.139073,-9.914560,21.064197
+41802,92.333286,-12.022850,21.284245
+41803,99.527498,-14.131140,21.504293
+41804,106.721710,-16.239430,21.724342
+41805,113.915923,-18.347720,21.944390
+41806,117.788794,-19.482679,22.062849
+41807,118.556177,-19.707563,22.086321
+50100,-89.712057,7.944701,16.015022
+50101,-82.629612,6.711563,16.218035
+50102,-75.243717,5.425590,16.429747
+50103,-67.857821,4.139617,16.641459
+50104,-60.471926,2.853644,16.853171
+50105,-53.086030,1.567671,17.064883
+50106,-46.003586,0.334532,17.267897
+50107,-45.757389,0.291667,17.274954
+50200,-89.284605,10.380026,16.064473
+50201,-82.190388,9.113531,16.267203
+50202,-74.810042,7.795955,16.478110
+50203,-67.429695,6.478379,16.689016
+50204,-60.049349,5.160803,16.899923
+50205,-52.669003,3.843226,17.110829
+50206,-45.574786,2.576731,17.313560
+50207,-45.328774,2.532812,17.320590
+50300,-88.857118,12.815550,16.113928
+50301,-81.750878,11.515534,16.316379
+50302,-74.376210,10.166412,16.526477
+50303,-67.001542,8.817289,16.736576
+50304,-59.626874,7.468167,16.946675
+50305,-52.252206,6.119045,17.156773
+50306,-45.145966,4.819028,17.359224
+50307,-44.900144,4.774058,17.366228
+50400,-88.429596,15.251272,16.163387
+50401,-81.311085,13.917567,16.365564
+50402,-73.942224,12.536957,16.574852
+50403,-66.573363,11.156348,16.784139
+50404,-59.204501,9.775738,16.993427
+50405,-51.835640,8.395129,17.202714
+50406,-44.717129,7.061424,17.404892
+50407,-44.471500,7.015404,17.411868
+50500,-45.510929,0.248755,17.282111
+50501,-38.432787,-0.983634,17.487549
+50502,-31.046966,-2.269594,17.701917
+50503,-23.661145,-3.555554,17.916285
+50504,-16.275324,-4.841514,18.130653
+50505,-8.889503,-6.127474,18.345022
+50506,-2.599182,-7.222694,18.527594
+50507,-1.811362,-7.359864,18.550460
+50600,-45.082531,2.488851,17.327719
+50601,-37.992541,1.223111,17.532882
+50602,-30.612269,-0.094452,17.746446
+50603,-23.231997,-1.412015,17.960010
+50604,-15.851724,-2.729578,18.173574
+50605,-8.471452,-4.047141,18.387138
+50606,-2.168691,-5.172341,18.569522
+50607,-1.381462,-5.312881,18.592302
+50700,-44.654113,4.729049,17.373328
+50701,-37.552027,3.429793,17.578222
+50702,-30.177432,2.080684,17.790979
+50703,-22.802838,0.731575,18.003735
+50704,-15.428244,-0.617534,18.216492
+50705,-8.053650,-1.966643,18.429249
+50706,-1.738187,-3.121994,18.611449
+50707,-0.951563,-3.265899,18.634143
+50800,-44.225676,6.969347,17.418940
+50801,-37.111246,5.636407,17.623570
+50802,-29.742458,4.255811,17.835516
+50803,-22.373670,2.875215,18.047462
+50804,-15.004882,1.494619,18.259408
+50805,-7.636095,0.114023,18.471354
+50806,-1.307668,-1.071653,18.653377
+50807,-0.521664,-1.218917,18.675985
+50900,-1.302458,-7.466716,18.565064
+50901,-0.524004,-7.649773,18.587418
+50902,3.263203,-8.540355,18.696173
+50903,10.561207,-10.256518,18.905744
+50904,17.859211,-11.972682,19.115315
+50905,25.157215,-13.688846,19.324886
+50906,32.455219,-15.405010,19.534457
+50907,37.020880,-16.478649,19.665566
+50908,37.264147,-16.535854,19.672552
+51000,-0.872565,-5.419761,18.606892
+51001,-0.094111,-5.602819,18.629228
+51002,3.709335,-6.497221,18.738356
+51003,11.007342,-8.213390,18.947750
+51004,18.305350,-9.929559,19.157143
+51005,25.603358,-11.645728,19.366537
+51006,32.901366,-13.361896,19.575931
+51007,37.483265,-14.439356,19.707394
+51008,37.726532,-14.496562,19.714374
+51100,-0.442672,-3.372806,18.648722
+51101,0.335783,-3.555865,18.671038
+51102,4.155466,-4.454088,18.780539
+51103,11.453478,-6.170261,18.989755
+51104,18.751490,-7.886435,19.198972
+51105,26.049502,-9.602609,19.408188
+51106,33.347513,-11.318783,19.617404
+51107,37.945651,-12.400064,19.749222
+51108,38.188918,-12.457270,19.756196
+51200,-0.012778,-1.325852,18.690551
+51201,0.765677,-1.508911,18.712848
+51202,4.601598,-2.410954,18.822722
+51203,11.899614,-4.127133,19.031761
+51204,19.197629,-5.843312,19.240800
+51205,26.495645,-7.559490,19.449839
+51206,33.793661,-9.275669,19.658878
+51207,38.408037,-10.360771,19.791049
+51208,38.651304,-10.417977,19.798017
+51300,37.507619,-16.593108,19.679971
+51301,42.073994,-17.666915,19.820570
+51302,49.371572,-19.382979,20.045262
+51303,56.669150,-21.099042,20.269954
+51304,63.966727,-22.815106,20.494647
+51305,71.264305,-24.531170,20.719339
+51306,75.830680,-25.604977,20.859938
+51307,76.073933,-25.662179,20.867427
+51400,37.970005,-14.553816,19.721786
+51401,42.552634,-15.631448,19.862767
+51402,49.850216,-17.347516,20.087271
+51403,57.147798,-19.063585,20.311775
+51404,64.445381,-20.779654,20.536279
+51405,71.742963,-22.495722,20.760783
+51406,76.325592,-23.573354,20.901764
+51407,76.568845,-23.630557,20.909247
+51500,38.432390,-12.514524,19.763602
+51501,43.031274,-13.595980,19.904964
+51502,50.328860,-15.312054,20.129280
+51503,57.626447,-17.028128,20.353596
+51504,64.924034,-18.744202,20.577912
+51505,72.221621,-20.460275,20.802228
+51506,76.820504,-21.541732,20.943590
+51507,77.063757,-21.598934,20.951068
+51600,38.894776,-10.475231,19.805418
+51601,43.509913,-11.560513,19.947161
+51602,50.807505,-13.276592,20.171289
+51603,58.105096,-14.992671,20.395417
+51604,65.402687,-16.708749,20.619546
+51605,72.700279,-18.424828,20.843674
+51606,77.315416,-19.510110,20.985417
+51607,77.558669,-19.567312,20.992888
+51700,76.317419,-25.719436,20.875505
+51701,80.884752,-26.793468,21.027010
+51702,88.181804,-28.509408,21.269063
+51703,95.478855,-30.225348,21.511116
+51704,102.775907,-31.941288,21.753169
+51705,110.072958,-33.657227,21.995222
+51706,113.861939,-34.548226,22.120908
+51707,114.640291,-34.731260,22.146727
+51800,76.812331,-23.687814,20.917318
+51801,81.395963,-24.765681,21.069237
+51802,88.693020,-26.481627,21.311090
+51803,95.990077,-28.197572,21.552942
+51804,103.287134,-29.913517,21.794794
+51805,110.584191,-31.629462,22.036646
+51806,114.389470,-32.524295,22.162768
+51807,115.167823,-32.707330,22.188565
+51900,77.307243,-21.656192,20.959132
+51901,81.907174,-22.737895,21.111465
+51902,89.204237,-24.453845,21.353117
+51903,96.501299,-26.169796,21.594768
+51904,103.798361,-27.885746,21.836420
+51905,111.095424,-29.601697,22.078072
+51906,114.917001,-30.500365,22.204628
+51907,115.695355,-30.683400,22.230405
+52000,77.802155,-19.624570,21.000946
+52001,82.418386,-20.710108,21.153692
+52002,89.715453,-22.426064,21.395143
+52003,97.012521,-24.142020,21.636595
+52004,104.309589,-25.857975,21.878047
+52005,111.606656,-27.573931,22.119498
+52006,115.444533,-28.476434,22.246489
+52007,116.222887,-28.659470,22.272244
+*Element
+ 10100,BEAM,1,2,10100,10101,0,0
+ 10101,BEAM,1,3,10101,10102,0,0
+ 10102,BEAM,1,3,10102,10103,0,0
+ 10103,BEAM,1,3,10103,10104,0,0
+ 10104,BEAM,1,3,10104,10105,0,0
+ 10105,BEAM,1,2,10105,10106,0,0
+ 10200,BEAM,1,2,10200,10201,0,0
+ 10201,BEAM,1,3,10201,10202,0,0
+ 10202,BEAM,1,3,10202,10203,0,0
+ 10203,BEAM,1,3,10203,10204,0,0
+ 10204,BEAM,1,3,10204,10205,0,0
+ 10205,BEAM,1,2,10205,10206,0,0
+ 10206,BEAM,1,6,10201,10101,0,0
+ 10207,BEAM,1,5,10202,10102,0,0
+ 10208,BEAM,1,5,10203,10103,0,0
+ 10209,BEAM,1,5,10204,10104,0,0
+ 10210,BEAM,1,6,10205,10105,0,0
+ 10300,BEAM,1,2,10300,10301,0,0
+ 10301,BEAM,1,3,10301,10302,0,0
+ 10302,BEAM,1,3,10302,10303,0,0
+ 10303,BEAM,1,3,10303,10304,0,0
+ 10304,BEAM,1,3,10304,10305,0,0
+ 10305,BEAM,1,2,10305,10306,0,0
+ 10306,BEAM,1,6,10301,10201,0,0
+ 10307,BEAM,1,5,10302,10202,0,0
+ 10308,BEAM,1,5,10303,10203,0,0
+ 10309,BEAM,1,5,10304,10204,0,0
+ 10310,BEAM,1,6,10305,10205,0,0
+ 10400,BEAM,1,2,10400,10401,0,0
+ 10401,BEAM,1,3,10401,10402,0,0
+ 10402,BEAM,1,3,10402,10403,0,0
+ 10403,BEAM,1,3,10403,10404,0,0
+ 10404,BEAM,1,3,10404,10405,0,0
+ 10405,BEAM,1,3,10405,10406,0,0
+ 10406,BEAM,1,3,10406,10407,0,0
+ 10407,BEAM,1,2,10407,10408,0,0
+ 10408,BEAM,1,6,10401,10501,0,0
+ 10409,BEAM,1,5,10402,10502,0,0
+ 10410,BEAM,1,5,10403,10503,0,0
+ 10411,BEAM,1,5,10404,10504,0,0
+ 10412,BEAM,1,5,10405,10505,0,0
+ 10413,BEAM,1,5,10406,10506,0,0
+ 10414,BEAM,1,6,10407,10507,0,0
+ 10500,BEAM,1,2,10500,10501,0,0
+ 10501,BEAM,1,3,10501,10502,0,0
+ 10502,BEAM,1,3,10502,10503,0,0
+ 10503,BEAM,1,3,10503,10504,0,0
+ 10504,BEAM,1,3,10504,10505,0,0
+ 10505,BEAM,1,3,10505,10506,0,0
+ 10506,BEAM,1,3,10506,10507,0,0
+ 10507,BEAM,1,2,10507,10508,0,0
+ 10508,BEAM,1,6,10501,10601,0,0
+ 10509,BEAM,1,5,10502,10602,0,0
+ 10510,BEAM,1,5,10503,10603,0,0
+ 10511,BEAM,1,5,10504,10604,0,0
+ 10512,BEAM,1,5,10505,10605,0,0
+ 10513,BEAM,1,5,10506,10606,0,0
+ 10514,BEAM,1,6,10507,10607,0,0
+ 10600,BEAM,1,2,10600,10601,0,0
+ 10601,BEAM,1,3,10601,10602,0,0
+ 10602,BEAM,1,3,10602,10603,0,0
+ 10603,BEAM,1,3,10603,10604,0,0
+ 10604,BEAM,1,3,10604,10605,0,0
+ 10605,BEAM,1,3,10605,10606,0,0
+ 10606,BEAM,1,3,10606,10607,0,0
+ 10607,BEAM,1,2,10607,10608,0,0
+ 10608,BEAM,1,6,10601,30401,0,0
+ 10609,BEAM,1,5,10602,30402,0,0
+ 10610,BEAM,1,5,10603,30403,0,0
+ 10611,BEAM,1,5,10604,30404,0,0
+ 10612,BEAM,1,5,10605,30405,0,0
+ 10613,BEAM,1,5,10606,30406,0,0
+ 10614,BEAM,1,6,10607,30407,0,0
+ 10700,BEAM,1,2,10700,10701,0,0
+ 10701,BEAM,1,3,10701,10702,0,0
+ 10702,BEAM,1,3,10702,10703,0,0
+ 10703,BEAM,1,3,10703,10704,0,0
+ 10704,BEAM,1,3,10704,10705,0,0
+ 10705,BEAM,1,3,10705,10706,0,0
+ 10706,BEAM,1,3,10706,10707,0,0
+ 10707,BEAM,1,4,10707,10708,0,0
+ 10708,BEAM,1,4,10708,50100,0,0
+ 10709,BEAM,1,5,10701,10801,0,0
+ 10710,BEAM,1,5,10702,10802,0,0
+ 10711,BEAM,1,5,10703,10803,0,0
+ 10712,BEAM,1,5,10704,10804,0,0
+ 10713,BEAM,1,5,10705,10805,0,0
+ 10714,BEAM,1,5,10706,10806,0,0
+ 10715,BEAM,1,6,10708,10808,0,0
+ 10800,BEAM,1,2,10800,10801,0,0
+ 10801,BEAM,1,3,10801,10802,0,0
+ 10802,BEAM,1,3,10802,10803,0,0
+ 10803,BEAM,1,3,10803,10804,0,0
+ 10804,BEAM,1,3,10804,10805,0,0
+ 10805,BEAM,1,3,10805,10806,0,0
+ 10806,BEAM,1,3,10806,10807,0,0
+ 10807,BEAM,1,4,10807,10808,0,0
+ 10808,BEAM,1,4,10808,50200,0,0
+ 10809,BEAM,1,5,10801,30801,0,0
+ 10810,BEAM,1,5,10802,30802,0,0
+ 10811,BEAM,1,5,10803,30803,0,0
+ 10812,BEAM,1,5,10804,30804,0,0
+ 10813,BEAM,1,5,10805,30805,0,0
+ 10814,BEAM,1,5,10806,30806,0,0
+ 10815,BEAM,1,6,10808,30808,0,0
+ 20100,BEAM,1,2,20100,20101,0,0
+ 20101,BEAM,1,3,20101,20102,0,0
+ 20102,BEAM,1,3,20102,20103,0,0
+ 20103,BEAM,1,3,20103,20104,0,0
+ 20104,BEAM,1,3,20104,20105,0,0
+ 20105,BEAM,1,2,20105,20106,0,0
+ 20200,BEAM,1,2,20200,20201,0,0
+ 20201,BEAM,1,3,20201,20202,0,0
+ 20202,BEAM,1,3,20202,20203,0,0
+ 20203,BEAM,1,3,20203,20204,0,0
+ 20204,BEAM,1,3,20204,20205,0,0
+ 20205,BEAM,1,2,20205,20206,0,0
+ 20206,BEAM,1,6,20201,20101,0,0
+ 20207,BEAM,1,5,20202,20102,0,0
+ 20208,BEAM,1,5,20203,20103,0,0
+ 20209,BEAM,1,5,20204,20104,0,0
+ 20210,BEAM,1,6,20205,20105,0,0
+ 20300,BEAM,1,2,20300,20301,0,0
+ 20301,BEAM,1,3,20301,20302,0,0
+ 20302,BEAM,1,3,20302,20303,0,0
+ 20303,BEAM,1,3,20303,20304,0,0
+ 20304,BEAM,1,3,20304,20305,0,0
+ 20305,BEAM,1,2,20305,20306,0,0
+ 20306,BEAM,1,6,20301,20201,0,0
+ 20307,BEAM,1,5,20302,20202,0,0
+ 20308,BEAM,1,5,20303,20203,0,0
+ 20309,BEAM,1,5,20304,20204,0,0
+ 20310,BEAM,1,6,20305,20205,0,0
+ 20400,BEAM,1,2,20400,20401,0,0
+ 20401,BEAM,1,3,20401,20402,0,0
+ 20402,BEAM,1,3,20402,20403,0,0
+ 20403,BEAM,1,3,20403,20404,0,0
+ 20404,BEAM,1,3,20404,20405,0,0
+ 20405,BEAM,1,4,20405,20406,0,0
+ 20406,BEAM,1,4,20406,20700,0,0
+ 20407,BEAM,1,5,20401,20501,0,0
+ 20408,BEAM,1,5,20402,20502,0,0
+ 20409,BEAM,1,5,20403,20503,0,0
+ 20410,BEAM,1,5,20404,20504,0,0
+ 20411,BEAM,1,6,20406,20506,0,0
+ 20500,BEAM,1,2,20500,20501,0,0
+ 20501,BEAM,1,3,20501,20502,0,0
+ 20502,BEAM,1,3,20502,20503,0,0
+ 20503,BEAM,1,3,20503,20504,0,0
+ 20504,BEAM,1,3,20504,20505,0,0
+ 20505,BEAM,1,4,20505,20506,0,0
+ 20506,BEAM,1,4,20506,20800,0,0
+ 20507,BEAM,1,5,20501,20601,0,0
+ 20508,BEAM,1,5,20502,20602,0,0
+ 20509,BEAM,1,5,20503,20603,0,0
+ 20510,BEAM,1,5,20504,20604,0,0
+ 20511,BEAM,1,6,20506,20606,0,0
+ 20600,BEAM,1,2,20600,20601,0,0
+ 20601,BEAM,1,3,20601,20602,0,0
+ 20602,BEAM,1,3,20602,20603,0,0
+ 20603,BEAM,1,3,20603,20604,0,0
+ 20604,BEAM,1,3,20604,20605,0,0
+ 20605,BEAM,1,4,20605,20606,0,0
+ 20606,BEAM,1,4,20606,20900,0,0
+ 20700,BEAM,1,3,20700,20701,0,0
+ 20701,BEAM,1,3,20701,20702,0,0
+ 20702,BEAM,1,3,20702,20703,0,0
+ 20703,BEAM,1,3,20703,20704,0,0
+ 20704,BEAM,1,3,20704,20705,0,0
+ 20705,BEAM,1,3,20705,20706,0,0
+ 20706,BEAM,1,4,20706,20707,0,0
+ 20707,BEAM,1,4,20707,21000,0,0
+ 20708,BEAM,1,5,20701,20801,0,0
+ 20709,BEAM,1,5,20702,20802,0,0
+ 20710,BEAM,1,5,20703,20803,0,0
+ 20711,BEAM,1,5,20704,20804,0,0
+ 20712,BEAM,1,5,20705,20805,0,0
+ 20713,BEAM,1,6,20707,20807,0,0
+ 20800,BEAM,1,3,20800,20801,0,0
+ 20801,BEAM,1,3,20801,20802,0,0
+ 20802,BEAM,1,3,20802,20803,0,0
+ 20803,BEAM,1,3,20803,20804,0,0
+ 20804,BEAM,1,3,20804,20805,0,0
+ 20805,BEAM,1,3,20805,20806,0,0
+ 20806,BEAM,1,4,20806,20807,0,0
+ 20807,BEAM,1,4,20807,21100,0,0
+ 20808,BEAM,1,5,20801,20901,0,0
+ 20809,BEAM,1,5,20802,20902,0,0
+ 20810,BEAM,1,5,20803,20903,0,0
+ 20811,BEAM,1,5,20804,20904,0,0
+ 20812,BEAM,1,5,20805,20905,0,0
+ 20813,BEAM,1,6,20807,20907,0,0
+ 20900,BEAM,1,3,20900,20901,0,0
+ 20901,BEAM,1,3,20901,20902,0,0
+ 20902,BEAM,1,3,20902,20903,0,0
+ 20903,BEAM,1,3,20903,20904,0,0
+ 20904,BEAM,1,3,20904,20905,0,0
+ 20905,BEAM,1,3,20905,20906,0,0
+ 20906,BEAM,1,4,20906,20907,0,0
+ 20907,BEAM,1,4,20907,21200,0,0
+ 21000,BEAM,1,3,21000,21001,0,0
+ 21001,BEAM,1,3,21001,21002,0,0
+ 21002,BEAM,1,3,21002,21003,0,0
+ 21003,BEAM,1,3,21003,21004,0,0
+ 21004,BEAM,1,3,21004,21005,0,0
+ 21005,BEAM,1,3,21005,21006,0,0
+ 21006,BEAM,1,4,21006,21007,0,0
+ 21007,BEAM,1,4,21007,21300,0,0
+ 21008,BEAM,1,5,21001,21101,0,0
+ 21009,BEAM,1,5,21002,21102,0,0
+ 21010,BEAM,1,5,21003,21103,0,0
+ 21011,BEAM,1,5,21004,21104,0,0
+ 21012,BEAM,1,5,21005,21105,0,0
+ 21013,BEAM,1,6,21007,21107,0,0
+ 21100,BEAM,1,3,21100,21101,0,0
+ 21101,BEAM,1,3,21101,21102,0,0
+ 21102,BEAM,1,3,21102,21103,0,0
+ 21103,BEAM,1,3,21103,21104,0,0
+ 21104,BEAM,1,3,21104,21105,0,0
+ 21105,BEAM,1,3,21105,21106,0,0
+ 21106,BEAM,1,4,21106,21107,0,0
+ 21107,BEAM,1,4,21107,21400,0,0
+ 21108,BEAM,1,5,21101,21201,0,0
+ 21109,BEAM,1,5,21102,21202,0,0
+ 21110,BEAM,1,5,21103,21203,0,0
+ 21111,BEAM,1,5,21104,21204,0,0
+ 21112,BEAM,1,5,21105,21205,0,0
+ 21113,BEAM,1,6,21107,21207,0,0
+ 21200,BEAM,1,3,21200,21201,0,0
+ 21201,BEAM,1,3,21201,21202,0,0
+ 21202,BEAM,1,3,21202,21203,0,0
+ 21203,BEAM,1,3,21203,21204,0,0
+ 21204,BEAM,1,3,21204,21205,0,0
+ 21205,BEAM,1,3,21205,21206,0,0
+ 21206,BEAM,1,4,21206,21207,0,0
+ 21207,BEAM,1,4,21207,21500,0,0
+ 21300,BEAM,1,3,21300,21301,0,0
+ 21301,BEAM,1,3,21301,21302,0,0
+ 21302,BEAM,1,3,21302,21303,0,0
+ 21303,BEAM,1,3,21303,21304,0,0
+ 21304,BEAM,1,3,21304,21305,0,0
+ 21305,BEAM,1,3,21305,21306,0,0
+ 21306,BEAM,1,2,21306,21307,0,0
+ 21307,BEAM,1,5,21301,21401,0,0
+ 21308,BEAM,1,5,21302,21402,0,0
+ 21309,BEAM,1,5,21303,21403,0,0
+ 21310,BEAM,1,5,21304,21404,0,0
+ 21311,BEAM,1,5,21305,21405,0,0
+ 21312,BEAM,1,6,21306,21406,0,0
+ 21400,BEAM,1,3,21400,21401,0,0
+ 21401,BEAM,1,3,21401,21402,0,0
+ 21402,BEAM,1,3,21402,21403,0,0
+ 21403,BEAM,1,3,21403,21404,0,0
+ 21404,BEAM,1,3,21404,21405,0,0
+ 21405,BEAM,1,3,21405,21406,0,0
+ 21406,BEAM,1,2,21406,21407,0,0
+ 21407,BEAM,1,5,21401,21501,0,0
+ 21408,BEAM,1,5,21402,21502,0,0
+ 21409,BEAM,1,5,21403,21503,0,0
+ 21410,BEAM,1,5,21404,21504,0,0
+ 21411,BEAM,1,5,21405,21505,0,0
+ 21412,BEAM,1,6,21406,21506,0,0
+ 21500,BEAM,1,3,21500,21501,0,0
+ 21501,BEAM,1,3,21501,21502,0,0
+ 21502,BEAM,1,3,21502,21503,0,0
+ 21503,BEAM,1,3,21503,21504,0,0
+ 21504,BEAM,1,3,21504,21505,0,0
+ 21505,BEAM,1,3,21505,21506,0,0
+ 21506,BEAM,1,2,21506,21507,0,0
+ 21600,BEAM,1,2,21600,21601,0,0
+ 21601,BEAM,1,3,21601,21602,0,0
+ 21602,BEAM,1,3,21602,21603,0,0
+ 21603,BEAM,1,3,21603,21604,0,0
+ 21604,BEAM,1,3,21604,21605,0,0
+ 21605,BEAM,1,3,21605,21606,0,0
+ 21606,BEAM,1,3,21606,21607,0,0
+ 21607,BEAM,1,4,21607,21608,0,0
+ 21608,BEAM,1,4,21608,21800,0,0
+ 21609,BEAM,1,5,21601,21701,0,0
+ 21610,BEAM,1,5,21602,21702,0,0
+ 21611,BEAM,1,5,21603,21703,0,0
+ 21612,BEAM,1,5,21604,21704,0,0
+ 21613,BEAM,1,5,21605,21705,0,0
+ 21614,BEAM,1,5,21606,21706,0,0
+ 21615,BEAM,1,6,21608,21708,0,0
+ 21700,BEAM,1,2,21700,21701,0,0
+ 21701,BEAM,1,3,21701,21702,0,0
+ 21702,BEAM,1,3,21702,21703,0,0
+ 21703,BEAM,1,3,21703,21704,0,0
+ 21704,BEAM,1,3,21704,21705,0,0
+ 21705,BEAM,1,3,21705,21706,0,0
+ 21706,BEAM,1,3,21706,21707,0,0
+ 21707,BEAM,1,4,21707,21708,0,0
+ 21708,BEAM,1,4,21708,21900,0,0
+ 21709,BEAM,1,5,21701,41001,0,0
+ 21710,BEAM,1,5,21702,41002,0,0
+ 21711,BEAM,1,5,21703,41003,0,0
+ 21712,BEAM,1,5,21704,41004,0,0
+ 21713,BEAM,1,5,21705,41005,0,0
+ 21714,BEAM,1,5,21706,41006,0,0
+ 21715,BEAM,1,6,21708,41008,0,0
+ 21800,BEAM,1,3,21800,21801,0,0
+ 21801,BEAM,1,3,21801,21802,0,0
+ 21802,BEAM,1,3,21802,21803,0,0
+ 21803,BEAM,1,3,21803,21804,0,0
+ 21804,BEAM,1,3,21804,21805,0,0
+ 21805,BEAM,1,3,21805,21806,0,0
+ 21806,BEAM,1,4,21806,21807,0,0
+ 21807,BEAM,1,4,21807,22000,0,0
+ 21808,BEAM,1,5,21801,21901,0,0
+ 21809,BEAM,1,5,21802,21902,0,0
+ 21810,BEAM,1,5,21803,21903,0,0
+ 21811,BEAM,1,5,21804,21904,0,0
+ 21812,BEAM,1,5,21805,21905,0,0
+ 21813,BEAM,1,6,21807,21907,0,0
+ 21900,BEAM,1,3,21900,21901,0,0
+ 21901,BEAM,1,3,21901,21902,0,0
+ 21902,BEAM,1,3,21902,21903,0,0
+ 21903,BEAM,1,3,21903,21904,0,0
+ 21904,BEAM,1,3,21904,21905,0,0
+ 21905,BEAM,1,3,21905,21906,0,0
+ 21906,BEAM,1,4,21906,21907,0,0
+ 21907,BEAM,1,4,21907,22100,0,0
+ 21908,BEAM,1,5,21901,41301,0,0
+ 21909,BEAM,1,5,21902,41302,0,0
+ 21910,BEAM,1,5,21903,41303,0,0
+ 21911,BEAM,1,5,21904,41304,0,0
+ 21912,BEAM,1,5,21905,41305,0,0
+ 21913,BEAM,1,6,21907,41307,0,0
+ 22000,BEAM,1,3,22000,22001,0,0
+ 22001,BEAM,1,3,22001,22002,0,0
+ 22002,BEAM,1,3,22002,22003,0,0
+ 22003,BEAM,1,3,22003,22004,0,0
+ 22004,BEAM,1,3,22004,22005,0,0
+ 22005,BEAM,1,3,22005,22006,0,0
+ 22006,BEAM,1,2,22006,22007,0,0
+ 22007,BEAM,1,5,22001,22101,0,0
+ 22008,BEAM,1,5,22002,22102,0,0
+ 22009,BEAM,1,5,22003,22103,0,0
+ 22010,BEAM,1,5,22004,22104,0,0
+ 22011,BEAM,1,5,22005,22105,0,0
+ 22012,BEAM,1,6,22006,22106,0,0
+ 22100,BEAM,1,3,22100,22101,0,0
+ 22101,BEAM,1,3,22101,22102,0,0
+ 22102,BEAM,1,3,22102,22103,0,0
+ 22103,BEAM,1,3,22103,22104,0,0
+ 22104,BEAM,1,3,22104,22105,0,0
+ 22105,BEAM,1,3,22105,22106,0,0
+ 22106,BEAM,1,2,22106,22107,0,0
+ 22107,BEAM,1,5,22101,41601,0,0
+ 22108,BEAM,1,5,22102,41602,0,0
+ 22109,BEAM,1,5,22103,41603,0,0
+ 22110,BEAM,1,5,22104,41604,0,0
+ 22111,BEAM,1,5,22105,41605,0,0
+ 22112,BEAM,1,6,22106,41606,0,0
+ 30100,BEAM,1,2,30100,30101,0,0
+ 30101,BEAM,1,3,30101,30102,0,0
+ 30102,BEAM,1,3,30102,30103,0,0
+ 30103,BEAM,1,3,30103,30104,0,0
+ 30104,BEAM,1,3,30104,30105,0,0
+ 30105,BEAM,1,2,30105,30106,0,0
+ 30106,BEAM,1,6,30101,30201,0,0
+ 30107,BEAM,1,5,30102,30202,0,0
+ 30108,BEAM,1,5,30103,30203,0,0
+ 30109,BEAM,1,5,30104,30204,0,0
+ 30110,BEAM,1,6,30105,30205,0,0
+ 30200,BEAM,1,2,30200,30201,0,0
+ 30201,BEAM,1,3,30201,30202,0,0
+ 30202,BEAM,1,3,30202,30203,0,0
+ 30203,BEAM,1,3,30203,30204,0,0
+ 30204,BEAM,1,3,30204,30205,0,0
+ 30205,BEAM,1,2,30205,30206,0,0
+ 30206,BEAM,1,6,30201,30301,0,0
+ 30207,BEAM,1,5,30202,30302,0,0
+ 30208,BEAM,1,5,30203,30303,0,0
+ 30209,BEAM,1,5,30204,30304,0,0
+ 30210,BEAM,1,6,30205,30305,0,0
+ 30300,BEAM,1,2,30300,30301,0,0
+ 30301,BEAM,1,3,30301,30302,0,0
+ 30302,BEAM,1,3,30302,30303,0,0
+ 30303,BEAM,1,3,30303,30304,0,0
+ 30304,BEAM,1,3,30304,30305,0,0
+ 30305,BEAM,1,2,30305,30306,0,0
+ 30400,BEAM,1,2,30400,30401,0,0
+ 30401,BEAM,1,3,30401,30402,0,0
+ 30402,BEAM,1,3,30402,30403,0,0
+ 30403,BEAM,1,3,30403,30404,0,0
+ 30404,BEAM,1,3,30404,30405,0,0
+ 30405,BEAM,1,3,30405,30406,0,0
+ 30406,BEAM,1,3,30406,30407,0,0
+ 30407,BEAM,1,2,30407,30408,0,0
+ 30408,BEAM,1,6,30401,30501,0,0
+ 30409,BEAM,1,5,30402,30502,0,0
+ 30410,BEAM,1,5,30403,30503,0,0
+ 30411,BEAM,1,5,30404,30504,0,0
+ 30412,BEAM,1,5,30405,30505,0,0
+ 30413,BEAM,1,5,30406,30506,0,0
+ 30414,BEAM,1,6,30407,30507,0,0
+ 30500,BEAM,1,2,30500,30501,0,0
+ 30501,BEAM,1,3,30501,30502,0,0
+ 30502,BEAM,1,3,30502,30503,0,0
+ 30503,BEAM,1,3,30503,30504,0,0
+ 30504,BEAM,1,3,30504,30505,0,0
+ 30505,BEAM,1,3,30505,30506,0,0
+ 30506,BEAM,1,3,30506,30507,0,0
+ 30507,BEAM,1,2,30507,30508,0,0
+ 30508,BEAM,1,6,30501,30601,0,0
+ 30509,BEAM,1,5,30502,30602,0,0
+ 30510,BEAM,1,5,30503,30603,0,0
+ 30511,BEAM,1,5,30504,30604,0,0
+ 30512,BEAM,1,5,30505,30605,0,0
+ 30513,BEAM,1,5,30506,30606,0,0
+ 30514,BEAM,1,6,30507,30607,0,0
+ 30600,BEAM,1,2,30600,30601,0,0
+ 30601,BEAM,1,3,30601,30602,0,0
+ 30602,BEAM,1,3,30602,30603,0,0
+ 30603,BEAM,1,3,30603,30604,0,0
+ 30604,BEAM,1,3,30604,30605,0,0
+ 30605,BEAM,1,3,30605,30606,0,0
+ 30606,BEAM,1,3,30606,30607,0,0
+ 30607,BEAM,1,2,30607,30608,0,0
+ 30608,BEAM,1,6,30601,30701,0,0
+ 30609,BEAM,1,5,30602,30702,0,0
+ 30610,BEAM,1,5,30603,30703,0,0
+ 30611,BEAM,1,5,30604,30704,0,0
+ 30612,BEAM,1,5,30605,30705,0,0
+ 30613,BEAM,1,5,30606,30706,0,0
+ 30614,BEAM,1,6,30607,30707,0,0
+ 30700,BEAM,1,2,30700,30701,0,0
+ 30701,BEAM,1,3,30701,30702,0,0
+ 30702,BEAM,1,3,30702,30703,0,0
+ 30703,BEAM,1,3,30703,30704,0,0
+ 30704,BEAM,1,3,30704,30705,0,0
+ 30705,BEAM,1,3,30705,30706,0,0
+ 30706,BEAM,1,3,30706,30707,0,0
+ 30707,BEAM,1,2,30707,30708,0,0
+ 30800,BEAM,1,2,30800,30801,0,0
+ 30801,BEAM,1,3,30801,30802,0,0
+ 30802,BEAM,1,3,30802,30803,0,0
+ 30803,BEAM,1,3,30803,30804,0,0
+ 30804,BEAM,1,3,30804,30805,0,0
+ 30805,BEAM,1,3,30805,30806,0,0
+ 30806,BEAM,1,3,30806,30807,0,0
+ 30807,BEAM,1,4,30807,30808,0,0
+ 30808,BEAM,1,4,30808,50300,0,0
+ 30809,BEAM,1,5,30801,30901,0,0
+ 30810,BEAM,1,5,30802,30902,0,0
+ 30811,BEAM,1,5,30803,30903,0,0
+ 30812,BEAM,1,5,30804,30904,0,0
+ 30813,BEAM,1,5,30805,30905,0,0
+ 30814,BEAM,1,5,30806,30906,0,0
+ 30815,BEAM,1,6,30808,30908,0,0
+ 30900,BEAM,1,2,30900,30901,0,0
+ 30901,BEAM,1,3,30901,30902,0,0
+ 30902,BEAM,1,3,30902,30903,0,0
+ 30903,BEAM,1,3,30903,30904,0,0
+ 30904,BEAM,1,3,30904,30905,0,0
+ 30905,BEAM,1,3,30905,30906,0,0
+ 30906,BEAM,1,3,30906,30907,0,0
+ 30907,BEAM,1,4,30907,30908,0,0
+ 30908,BEAM,1,4,30908,50400,0,0
+ 40100,BEAM,1,2,40100,40101,0,0
+ 40101,BEAM,1,3,40101,40102,0,0
+ 40102,BEAM,1,3,40102,40103,0,0
+ 40103,BEAM,1,3,40103,40104,0,0
+ 40104,BEAM,1,3,40104,40105,0,0
+ 40105,BEAM,1,3,40105,40106,0,0
+ 40106,BEAM,1,3,40106,40107,0,0
+ 40107,BEAM,1,4,40107,40108,0,0
+ 40108,BEAM,1,4,40108,40400,0,0
+ 40109,BEAM,1,5,40101,40201,0,0
+ 40110,BEAM,1,5,40102,40202,0,0
+ 40111,BEAM,1,5,40103,40203,0,0
+ 40112,BEAM,1,5,40104,40204,0,0
+ 40113,BEAM,1,5,40105,40205,0,0
+ 40114,BEAM,1,5,40106,40206,0,0
+ 40115,BEAM,1,6,40108,40208,0,0
+ 40200,BEAM,1,2,40200,40201,0,0
+ 40201,BEAM,1,3,40201,40202,0,0
+ 40202,BEAM,1,3,40202,40203,0,0
+ 40203,BEAM,1,3,40203,40204,0,0
+ 40204,BEAM,1,3,40204,40205,0,0
+ 40205,BEAM,1,3,40205,40206,0,0
+ 40206,BEAM,1,3,40206,40207,0,0
+ 40207,BEAM,1,4,40207,40208,0,0
+ 40208,BEAM,1,4,40208,40500,0,0
+ 40209,BEAM,1,5,40201,40301,0,0
+ 40210,BEAM,1,5,40202,40302,0,0
+ 40211,BEAM,1,5,40203,40303,0,0
+ 40212,BEAM,1,5,40204,40304,0,0
+ 40213,BEAM,1,5,40205,40305,0,0
+ 40214,BEAM,1,5,40206,40306,0,0
+ 40215,BEAM,1,6,40208,40308,0,0
+ 40300,BEAM,1,2,40300,40301,0,0
+ 40301,BEAM,1,3,40301,40302,0,0
+ 40302,BEAM,1,3,40302,40303,0,0
+ 40303,BEAM,1,3,40303,40304,0,0
+ 40304,BEAM,1,3,40304,40305,0,0
+ 40305,BEAM,1,3,40305,40306,0,0
+ 40306,BEAM,1,3,40306,40307,0,0
+ 40307,BEAM,1,4,40307,40308,0,0
+ 40308,BEAM,1,4,40308,40600,0,0
+ 40400,BEAM,1,3,40400,40401,0,0
+ 40401,BEAM,1,3,40401,40402,0,0
+ 40402,BEAM,1,3,40402,40403,0,0
+ 40403,BEAM,1,3,40403,40404,0,0
+ 40404,BEAM,1,3,40404,40405,0,0
+ 40405,BEAM,1,3,40405,40406,0,0
+ 40406,BEAM,1,4,40406,40407,0,0
+ 40407,BEAM,1,4,40407,40700,0,0
+ 40408,BEAM,1,5,40401,40501,0,0
+ 40409,BEAM,1,5,40402,40502,0,0
+ 40410,BEAM,1,5,40403,40503,0,0
+ 40411,BEAM,1,5,40404,40504,0,0
+ 40412,BEAM,1,5,40405,40505,0,0
+ 40413,BEAM,1,6,40407,40507,0,0
+ 40500,BEAM,1,3,40500,40501,0,0
+ 40501,BEAM,1,3,40501,40502,0,0
+ 40502,BEAM,1,3,40502,40503,0,0
+ 40503,BEAM,1,3,40503,40504,0,0
+ 40504,BEAM,1,3,40504,40505,0,0
+ 40505,BEAM,1,3,40505,40506,0,0
+ 40506,BEAM,1,4,40506,40507,0,0
+ 40507,BEAM,1,4,40507,40800,0,0
+ 40508,BEAM,1,5,40501,40601,0,0
+ 40509,BEAM,1,5,40502,40602,0,0
+ 40510,BEAM,1,5,40503,40603,0,0
+ 40511,BEAM,1,5,40504,40604,0,0
+ 40512,BEAM,1,5,40505,40605,0,0
+ 40513,BEAM,1,6,40507,40607,0,0
+ 40600,BEAM,1,3,40600,40601,0,0
+ 40601,BEAM,1,3,40601,40602,0,0
+ 40602,BEAM,1,3,40602,40603,0,0
+ 40603,BEAM,1,3,40603,40604,0,0
+ 40604,BEAM,1,3,40604,40605,0,0
+ 40605,BEAM,1,3,40605,40606,0,0
+ 40606,BEAM,1,4,40606,40607,0,0
+ 40607,BEAM,1,4,40607,40900,0,0
+ 40700,BEAM,1,3,40700,40701,0,0
+ 40701,BEAM,1,3,40701,40702,0,0
+ 40702,BEAM,1,3,40702,40703,0,0
+ 40703,BEAM,1,3,40703,40704,0,0
+ 40704,BEAM,1,3,40704,40705,0,0
+ 40705,BEAM,1,3,40705,40706,0,0
+ 40706,BEAM,1,2,40706,40707,0,0
+ 40707,BEAM,1,5,40701,40801,0,0
+ 40708,BEAM,1,5,40702,40802,0,0
+ 40709,BEAM,1,5,40703,40803,0,0
+ 40710,BEAM,1,5,40704,40804,0,0
+ 40711,BEAM,1,5,40705,40805,0,0
+ 40712,BEAM,1,6,40706,40806,0,0
+ 40800,BEAM,1,3,40800,40801,0,0
+ 40801,BEAM,1,3,40801,40802,0,0
+ 40802,BEAM,1,3,40802,40803,0,0
+ 40803,BEAM,1,3,40803,40804,0,0
+ 40804,BEAM,1,3,40804,40805,0,0
+ 40805,BEAM,1,3,40805,40806,0,0
+ 40806,BEAM,1,2,40806,40807,0,0
+ 40807,BEAM,1,5,40801,40901,0,0
+ 40808,BEAM,1,5,40802,40902,0,0
+ 40809,BEAM,1,5,40803,40903,0,0
+ 40810,BEAM,1,5,40804,40904,0,0
+ 40811,BEAM,1,5,40805,40905,0,0
+ 40812,BEAM,1,6,40806,40906,0,0
+ 40900,BEAM,1,3,40900,40901,0,0
+ 40901,BEAM,1,3,40901,40902,0,0
+ 40902,BEAM,1,3,40902,40903,0,0
+ 40903,BEAM,1,3,40903,40904,0,0
+ 40904,BEAM,1,3,40904,40905,0,0
+ 40905,BEAM,1,3,40905,40906,0,0
+ 40906,BEAM,1,2,40906,40907,0,0
+ 41000,BEAM,1,2,41000,41001,0,0
+ 41001,BEAM,1,3,41001,41002,0,0
+ 41002,BEAM,1,3,41002,41003,0,0
+ 41003,BEAM,1,3,41003,41004,0,0
+ 41004,BEAM,1,3,41004,41005,0,0
+ 41005,BEAM,1,3,41005,41006,0,0
+ 41006,BEAM,1,3,41006,41007,0,0
+ 41007,BEAM,1,4,41007,41008,0,0
+ 41008,BEAM,1,4,41008,41300,0,0
+ 41009,BEAM,1,5,41001,41101,0,0
+ 41010,BEAM,1,5,41002,41102,0,0
+ 41011,BEAM,1,5,41003,41103,0,0
+ 41012,BEAM,1,5,41004,41104,0,0
+ 41013,BEAM,1,5,41005,41105,0,0
+ 41014,BEAM,1,5,41006,41106,0,0
+ 41015,BEAM,1,6,41008,41108,0,0
+ 41100,BEAM,1,2,41100,41101,0,0
+ 41101,BEAM,1,3,41101,41102,0,0
+ 41102,BEAM,1,3,41102,41103,0,0
+ 41103,BEAM,1,3,41103,41104,0,0
+ 41104,BEAM,1,3,41104,41105,0,0
+ 41105,BEAM,1,3,41105,41106,0,0
+ 41106,BEAM,1,3,41106,41107,0,0
+ 41107,BEAM,1,4,41107,41108,0,0
+ 41108,BEAM,1,4,41108,41400,0,0
+ 41109,BEAM,1,5,41101,41201,0,0
+ 41110,BEAM,1,5,41102,41202,0,0
+ 41111,BEAM,1,5,41103,41203,0,0
+ 41112,BEAM,1,5,41104,41204,0,0
+ 41113,BEAM,1,5,41105,41205,0,0
+ 41114,BEAM,1,5,41106,41206,0,0
+ 41115,BEAM,1,6,41108,41208,0,0
+ 41200,BEAM,1,2,41200,41201,0,0
+ 41201,BEAM,1,3,41201,41202,0,0
+ 41202,BEAM,1,3,41202,41203,0,0
+ 41203,BEAM,1,3,41203,41204,0,0
+ 41204,BEAM,1,3,41204,41205,0,0
+ 41205,BEAM,1,3,41205,41206,0,0
+ 41206,BEAM,1,3,41206,41207,0,0
+ 41207,BEAM,1,4,41207,41208,0,0
+ 41208,BEAM,1,4,41208,41500,0,0
+ 41300,BEAM,1,3,41300,41301,0,0
+ 41301,BEAM,1,3,41301,41302,0,0
+ 41302,BEAM,1,3,41302,41303,0,0
+ 41303,BEAM,1,3,41303,41304,0,0
+ 41304,BEAM,1,3,41304,41305,0,0
+ 41305,BEAM,1,3,41305,41306,0,0
+ 41306,BEAM,1,4,41306,41307,0,0
+ 41307,BEAM,1,4,41307,41600,0,0
+ 41308,BEAM,1,5,41301,41401,0,0
+ 41309,BEAM,1,5,41302,41402,0,0
+ 41310,BEAM,1,5,41303,41403,0,0
+ 41311,BEAM,1,5,41304,41404,0,0
+ 41312,BEAM,1,5,41305,41405,0,0
+ 41313,BEAM,1,6,41307,41407,0,0
+ 41400,BEAM,1,3,41400,41401,0,0
+ 41401,BEAM,1,3,41401,41402,0,0
+ 41402,BEAM,1,3,41402,41403,0,0
+ 41403,BEAM,1,3,41403,41404,0,0
+ 41404,BEAM,1,3,41404,41405,0,0
+ 41405,BEAM,1,3,41405,41406,0,0
+ 41406,BEAM,1,4,41406,41407,0,0
+ 41407,BEAM,1,4,41407,41700,0,0
+ 41408,BEAM,1,5,41401,41501,0,0
+ 41409,BEAM,1,5,41402,41502,0,0
+ 41410,BEAM,1,5,41403,41503,0,0
+ 41411,BEAM,1,5,41404,41504,0,0
+ 41412,BEAM,1,5,41405,41505,0,0
+ 41413,BEAM,1,6,41407,41507,0,0
+ 41500,BEAM,1,3,41500,41501,0,0
+ 41501,BEAM,1,3,41501,41502,0,0
+ 41502,BEAM,1,3,41502,41503,0,0
+ 41503,BEAM,1,3,41503,41504,0,0
+ 41504,BEAM,1,3,41504,41505,0,0
+ 41505,BEAM,1,3,41505,41506,0,0
+ 41506,BEAM,1,4,41506,41507,0,0
+ 41507,BEAM,1,4,41507,41800,0,0
+ 41600,BEAM,1,3,41600,41601,0,0
+ 41601,BEAM,1,3,41601,41602,0,0
+ 41602,BEAM,1,3,41602,41603,0,0
+ 41603,BEAM,1,3,41603,41604,0,0
+ 41604,BEAM,1,3,41604,41605,0,0
+ 41605,BEAM,1,3,41605,41606,0,0
+ 41606,BEAM,1,2,41606,41607,0,0
+ 41607,BEAM,1,5,41601,41701,0,0
+ 41608,BEAM,1,5,41602,41702,0,0
+ 41609,BEAM,1,5,41603,41703,0,0
+ 41610,BEAM,1,5,41604,41704,0,0
+ 41611,BEAM,1,5,41605,41705,0,0
+ 41612,BEAM,1,6,41606,41706,0,0
+ 41700,BEAM,1,3,41700,41701,0,0
+ 41701,BEAM,1,3,41701,41702,0,0
+ 41702,BEAM,1,3,41702,41703,0,0
+ 41703,BEAM,1,3,41703,41704,0,0
+ 41704,BEAM,1,3,41704,41705,0,0
+ 41705,BEAM,1,3,41705,41706,0,0
+ 41706,BEAM,1,2,41706,41707,0,0
+ 41707,BEAM,1,5,41701,41801,0,0
+ 41708,BEAM,1,5,41702,41802,0,0
+ 41709,BEAM,1,5,41703,41803,0,0
+ 41710,BEAM,1,5,41704,41804,0,0
+ 41711,BEAM,1,5,41705,41805,0,0
+ 41712,BEAM,1,6,41706,41806,0,0
+ 41800,BEAM,1,3,41800,41801,0,0
+ 41801,BEAM,1,3,41801,41802,0,0
+ 41802,BEAM,1,3,41802,41803,0,0
+ 41803,BEAM,1,3,41803,41804,0,0
+ 41804,BEAM,1,3,41804,41805,0,0
+ 41805,BEAM,1,3,41805,41806,0,0
+ 41806,BEAM,1,2,41806,41807,0,0
+ 50100,BEAM,1,3,50100,50101,0,0
+ 50101,BEAM,1,3,50101,50102,0,0
+ 50102,BEAM,1,3,50102,50103,0,0
+ 50103,BEAM,1,3,50103,50104,0,0
+ 50104,BEAM,1,3,50104,50105,0,0
+ 50105,BEAM,1,3,50105,50106,0,0
+ 50106,BEAM,1,4,50106,50107,0,0
+ 50107,BEAM,1,4,50107,50500,0,0
+ 50108,BEAM,1,5,50101,50201,0,0
+ 50109,BEAM,1,5,50102,50202,0,0
+ 50110,BEAM,1,5,50103,50203,0,0
+ 50111,BEAM,1,5,50104,50204,0,0
+ 50112,BEAM,1,5,50105,50205,0,0
+ 50113,BEAM,1,6,50107,50207,0,0
+ 50200,BEAM,1,3,50200,50201,0,0
+ 50201,BEAM,1,3,50201,50202,0,0
+ 50202,BEAM,1,3,50202,50203,0,0
+ 50203,BEAM,1,3,50203,50204,0,0
+ 50204,BEAM,1,3,50204,50205,0,0
+ 50205,BEAM,1,3,50205,50206,0,0
+ 50206,BEAM,1,4,50206,50207,0,0
+ 50207,BEAM,1,4,50207,50600,0,0
+ 50208,BEAM,1,5,50201,50301,0,0
+ 50209,BEAM,1,5,50202,50302,0,0
+ 50210,BEAM,1,5,50203,50303,0,0
+ 50211,BEAM,1,5,50204,50304,0,0
+ 50212,BEAM,1,5,50205,50305,0,0
+ 50213,BEAM,1,6,50207,50307,0,0
+ 50300,BEAM,1,3,50300,50301,0,0
+ 50301,BEAM,1,3,50301,50302,0,0
+ 50302,BEAM,1,3,50302,50303,0,0
+ 50303,BEAM,1,3,50303,50304,0,0
+ 50304,BEAM,1,3,50304,50305,0,0
+ 50305,BEAM,1,3,50305,50306,0,0
+ 50306,BEAM,1,4,50306,50307,0,0
+ 50307,BEAM,1,4,50307,50700,0,0
+ 50308,BEAM,1,5,50301,50401,0,0
+ 50309,BEAM,1,5,50302,50402,0,0
+ 50310,BEAM,1,5,50303,50403,0,0
+ 50311,BEAM,1,5,50304,50404,0,0
+ 50312,BEAM,1,5,50305,50405,0,0
+ 50313,BEAM,1,6,50307,50407,0,0
+ 50400,BEAM,1,3,50400,50401,0,0
+ 50401,BEAM,1,3,50401,50402,0,0
+ 50402,BEAM,1,3,50402,50403,0,0
+ 50403,BEAM,1,3,50403,50404,0,0
+ 50404,BEAM,1,3,50404,50405,0,0
+ 50405,BEAM,1,3,50405,50406,0,0
+ 50406,BEAM,1,4,50406,50407,0,0
+ 50407,BEAM,1,4,50407,50800,0,0
+ 50500,BEAM,1,3,50500,50501,0,0
+ 50501,BEAM,1,3,50501,50502,0,0
+ 50502,BEAM,1,3,50502,50503,0,0
+ 50503,BEAM,1,3,50503,50504,0,0
+ 50504,BEAM,1,3,50504,50505,0,0
+ 50505,BEAM,1,3,50505,50506,0,0
+ 50506,BEAM,1,2,50506,50507,0,0
+ 50507,BEAM,1,5,50501,50601,0,0
+ 50508,BEAM,1,5,50502,50602,0,0
+ 50509,BEAM,1,5,50503,50603,0,0
+ 50510,BEAM,1,5,50504,50604,0,0
+ 50511,BEAM,1,5,50505,50605,0,0
+ 50512,BEAM,1,6,50506,50606,0,0
+ 50600,BEAM,1,3,50600,50601,0,0
+ 50601,BEAM,1,3,50601,50602,0,0
+ 50602,BEAM,1,3,50602,50603,0,0
+ 50603,BEAM,1,3,50603,50604,0,0
+ 50604,BEAM,1,3,50604,50605,0,0
+ 50605,BEAM,1,3,50605,50606,0,0
+ 50606,BEAM,1,2,50606,50607,0,0
+ 50607,BEAM,1,5,50601,50701,0,0
+ 50608,BEAM,1,5,50602,50702,0,0
+ 50609,BEAM,1,5,50603,50703,0,0
+ 50610,BEAM,1,5,50604,50704,0,0
+ 50611,BEAM,1,5,50605,50705,0,0
+ 50612,BEAM,1,6,50606,50706,0,0
+ 50700,BEAM,1,3,50700,50701,0,0
+ 50701,BEAM,1,3,50701,50702,0,0
+ 50702,BEAM,1,3,50702,50703,0,0
+ 50703,BEAM,1,3,50703,50704,0,0
+ 50704,BEAM,1,3,50704,50705,0,0
+ 50705,BEAM,1,3,50705,50706,0,0
+ 50706,BEAM,1,2,50706,50707,0,0
+ 50707,BEAM,1,5,50701,50801,0,0
+ 50708,BEAM,1,5,50702,50802,0,0
+ 50709,BEAM,1,5,50703,50803,0,0
+ 50710,BEAM,1,5,50704,50804,0,0
+ 50711,BEAM,1,5,50705,50805,0,0
+ 50712,BEAM,1,6,50706,50806,0,0
+ 50800,BEAM,1,3,50800,50801,0,0
+ 50801,BEAM,1,3,50801,50802,0,0
+ 50802,BEAM,1,3,50802,50803,0,0
+ 50803,BEAM,1,3,50803,50804,0,0
+ 50804,BEAM,1,3,50804,50805,0,0
+ 50805,BEAM,1,3,50805,50806,0,0
+ 50806,BEAM,1,2,50806,50807,0,0
+ 50900,BEAM,1,2,50900,50901,0,0
+ 50901,BEAM,1,3,50901,50902,0,0
+ 50902,BEAM,1,3,50902,50903,0,0
+ 50903,BEAM,1,3,50903,50904,0,0
+ 50904,BEAM,1,3,50904,50905,0,0
+ 50905,BEAM,1,3,50905,50906,0,0
+ 50906,BEAM,1,3,50906,50907,0,0
+ 50907,BEAM,1,4,50907,50908,0,0
+ 50908,BEAM,1,4,50908,51300,0,0
+ 50909,BEAM,1,5,50901,51001,0,0
+ 50910,BEAM,1,5,50902,51002,0,0
+ 50911,BEAM,1,5,50903,51003,0,0
+ 50912,BEAM,1,5,50904,51004,0,0
+ 50913,BEAM,1,5,50905,51005,0,0
+ 50914,BEAM,1,5,50906,51006,0,0
+ 50915,BEAM,1,6,50908,51008,0,0
+ 51000,BEAM,1,2,51000,51001,0,0
+ 51001,BEAM,1,3,51001,51002,0,0
+ 51002,BEAM,1,3,51002,51003,0,0
+ 51003,BEAM,1,3,51003,51004,0,0
+ 51004,BEAM,1,3,51004,51005,0,0
+ 51005,BEAM,1,3,51005,51006,0,0
+ 51006,BEAM,1,3,51006,51007,0,0
+ 51007,BEAM,1,4,51007,51008,0,0
+ 51008,BEAM,1,4,51008,51400,0,0
+ 51009,BEAM,1,5,51001,51101,0,0
+ 51010,BEAM,1,5,51002,51102,0,0
+ 51011,BEAM,1,5,51003,51103,0,0
+ 51012,BEAM,1,5,51004,51104,0,0
+ 51013,BEAM,1,5,51005,51105,0,0
+ 51014,BEAM,1,5,51006,51106,0,0
+ 51015,BEAM,1,6,51008,51108,0,0
+ 51100,BEAM,1,2,51100,51101,0,0
+ 51101,BEAM,1,3,51101,51102,0,0
+ 51102,BEAM,1,3,51102,51103,0,0
+ 51103,BEAM,1,3,51103,51104,0,0
+ 51104,BEAM,1,3,51104,51105,0,0
+ 51105,BEAM,1,3,51105,51106,0,0
+ 51106,BEAM,1,3,51106,51107,0,0
+ 51107,BEAM,1,4,51107,51108,0,0
+ 51108,BEAM,1,4,51108,51500,0,0
+ 51109,BEAM,1,5,51101,51201,0,0
+ 51110,BEAM,1,5,51102,51202,0,0
+ 51111,BEAM,1,5,51103,51203,0,0
+ 51112,BEAM,1,5,51104,51204,0,0
+ 51113,BEAM,1,5,51105,51205,0,0
+ 51114,BEAM,1,5,51106,51206,0,0
+ 51115,BEAM,1,6,51108,51208,0,0
+ 51200,BEAM,1,2,51200,51201,0,0
+ 51201,BEAM,1,3,51201,51202,0,0
+ 51202,BEAM,1,3,51202,51203,0,0
+ 51203,BEAM,1,3,51203,51204,0,0
+ 51204,BEAM,1,3,51204,51205,0,0
+ 51205,BEAM,1,3,51205,51206,0,0
+ 51206,BEAM,1,3,51206,51207,0,0
+ 51207,BEAM,1,4,51207,51208,0,0
+ 51208,BEAM,1,4,51208,51600,0,0
+ 51300,BEAM,1,3,51300,51301,0,0
+ 51301,BEAM,1,3,51301,51302,0,0
+ 51302,BEAM,1,3,51302,51303,0,0
+ 51303,BEAM,1,3,51303,51304,0,0
+ 51304,BEAM,1,3,51304,51305,0,0
+ 51305,BEAM,1,3,51305,51306,0,0
+ 51306,BEAM,1,4,51306,51307,0,0
+ 51307,BEAM,1,4,51307,51700,0,0
+ 51308,BEAM,1,5,51301,51401,0,0
+ 51309,BEAM,1,5,51302,51402,0,0
+ 51310,BEAM,1,5,51303,51403,0,0
+ 51311,BEAM,1,5,51304,51404,0,0
+ 51312,BEAM,1,5,51305,51405,0,0
+ 51313,BEAM,1,6,51307,51407,0,0
+ 51400,BEAM,1,3,51400,51401,0,0
+ 51401,BEAM,1,3,51401,51402,0,0
+ 51402,BEAM,1,3,51402,51403,0,0
+ 51403,BEAM,1,3,51403,51404,0,0
+ 51404,BEAM,1,3,51404,51405,0,0
+ 51405,BEAM,1,3,51405,51406,0,0
+ 51406,BEAM,1,4,51406,51407,0,0
+ 51407,BEAM,1,4,51407,51800,0,0
+ 51408,BEAM,1,5,51401,51501,0,0
+ 51409,BEAM,1,5,51402,51502,0,0
+ 51410,BEAM,1,5,51403,51503,0,0
+ 51411,BEAM,1,5,51404,51504,0,0
+ 51412,BEAM,1,5,51405,51505,0,0
+ 51413,BEAM,1,6,51407,51507,0,0
+ 51500,BEAM,1,3,51500,51501,0,0
+ 51501,BEAM,1,3,51501,51502,0,0
+ 51502,BEAM,1,3,51502,51503,0,0
+ 51503,BEAM,1,3,51503,51504,0,0
+ 51504,BEAM,1,3,51504,51505,0,0
+ 51505,BEAM,1,3,51505,51506,0,0
+ 51506,BEAM,1,4,51506,51507,0,0
+ 51507,BEAM,1,4,51507,51900,0,0
+ 51508,BEAM,1,5,51501,51601,0,0
+ 51509,BEAM,1,5,51502,51602,0,0
+ 51510,BEAM,1,5,51503,51603,0,0
+ 51511,BEAM,1,5,51504,51604,0,0
+ 51512,BEAM,1,5,51505,51605,0,0
+ 51513,BEAM,1,6,51507,51607,0,0
+ 51600,BEAM,1,3,51600,51601,0,0
+ 51601,BEAM,1,3,51601,51602,0,0
+ 51602,BEAM,1,3,51602,51603,0,0
+ 51603,BEAM,1,3,51603,51604,0,0
+ 51604,BEAM,1,3,51604,51605,0,0
+ 51605,BEAM,1,3,51605,51606,0,0
+ 51606,BEAM,1,4,51606,51607,0,0
+ 51607,BEAM,1,4,51607,52000,0,0
+ 51700,BEAM,1,3,51700,51701,0,0
+ 51701,BEAM,1,3,51701,51702,0,0
+ 51702,BEAM,1,3,51702,51703,0,0
+ 51703,BEAM,1,3,51703,51704,0,0
+ 51704,BEAM,1,3,51704,51705,0,0
+ 51705,BEAM,1,3,51705,51706,0,0
+ 51706,BEAM,1,2,51706,51707,0,0
+ 51707,BEAM,1,5,51701,51801,0,0
+ 51708,BEAM,1,5,51702,51802,0,0
+ 51709,BEAM,1,5,51703,51803,0,0
+ 51710,BEAM,1,5,51704,51804,0,0
+ 51711,BEAM,1,5,51705,51805,0,0
+ 51712,BEAM,1,6,51706,51806,0,0
+ 51800,BEAM,1,3,51800,51801,0,0
+ 51801,BEAM,1,3,51801,51802,0,0
+ 51802,BEAM,1,3,51802,51803,0,0
+ 51803,BEAM,1,3,51803,51804,0,0
+ 51804,BEAM,1,3,51804,51805,0,0
+ 51805,BEAM,1,3,51805,51806,0,0
+ 51806,BEAM,1,2,51806,51807,0,0
+ 51807,BEAM,1,5,51801,51901,0,0
+ 51808,BEAM,1,5,51802,51902,0,0
+ 51809,BEAM,1,5,51803,51903,0,0
+ 51810,BEAM,1,5,51804,51904,0,0
+ 51811,BEAM,1,5,51805,51905,0,0
+ 51812,BEAM,1,6,51806,51906,0,0
+ 51900,BEAM,1,3,51900,51901,0,0
+ 51901,BEAM,1,3,51901,51902,0,0
+ 51902,BEAM,1,3,51902,51903,0,0
+ 51903,BEAM,1,3,51903,51904,0,0
+ 51904,BEAM,1,3,51904,51905,0,0
+ 51905,BEAM,1,3,51905,51906,0,0
+ 51906,BEAM,1,2,51906,51907,0,0
+ 51907,BEAM,1,5,51901,52001,0,0
+ 51908,BEAM,1,5,51902,52002,0,0
+ 51909,BEAM,1,5,51903,52003,0,0
+ 51910,BEAM,1,5,51904,52004,0,0
+ 51911,BEAM,1,5,51905,52005,0,0
+ 51912,BEAM,1,6,51906,52006,0,0
+ 52000,BEAM,1,3,52000,52001,0,0
+ 52001,BEAM,1,3,52001,52002,0,0
+ 52002,BEAM,1,3,52002,52003,0,0
+ 52003,BEAM,1,3,52003,52004,0,0
+ 52004,BEAM,1,3,52004,52005,0,0
+ 52005,BEAM,1,3,52005,52006,0,0
+ 52006,BEAM,1,2,52006,52007,0,0
+*NODE
+10107,-341.231625,-49.775884,12.697703
+10108,-361.738167,-74.963925,11.842912
+10207,-339.506182,-51.180684,12.653203
+10208,-360.012652,-76.368633,11.798415
+10307,-337.780735,-52.585486,12.608702
+10308,-358.287131,-77.773347,11.753918
+10409,-135.383882,14.889478,14.400732
+10410,-176.137665,22.944285,13.250183
+10509,-135.095751,16.531050,14.434065
+10510,-175.764040,25.178257,13.304571
+10609,-134.807619,18.172622,14.467398
+10610,-175.390415,27.412229,13.358961
+10709,-89.958449,7.987601,15.708012
+10710,-134.700040,15.777648,14.435152
+10809,-89.530812,10.423980,15.757485
+10810,-134.238800,18.405473,14.488512
+20107,-347.008956,-45.072169,14.092747
+20108,-367.515743,-70.260510,12.143918
+20207,-345.283512,-46.476970,14.048244
+20208,-365.790229,-71.665218,12.099423
+20307,-343.558067,-47.881771,14.003741
+20308,-364.064715,-73.069927,12.054928
+20407,-132.493326,29.396767,22.013272
+20408,-161.782606,35.595174,22.453193
+20507,-132.032662,31.573556,22.057772
+20508,-161.321942,37.771964,22.497693
+20607,-131.571998,33.750345,22.102272
+20608,-160.861278,39.948754,22.542193
+20708,-88.468380,20.079892,21.352022
+20808,-88.007716,22.256680,21.396522
+20908,-87.547052,24.433469,21.441022
+21008,-43.781565,10.622947,20.680832
+21108,-43.363548,12.808760,20.725972
+21208,-42.945531,14.994573,20.771113
+21308,0.018614,1.353639,20.071965
+21408,0.475923,3.531136,20.116494
+21508,0.933233,5.708633,20.161024
+21609,39.243217,-7.807862,20.023662
+21610,0.537624,1.294910,20.068560
+21709,39.846248,-5.148041,20.078210
+21710,1.209453,4.493851,20.133976
+21808,78.192003,-16.967827,20.605189
+21908,78.708827,-14.846278,20.648861
+22008,116.897664,-26.070615,21.798295
+22108,117.312292,-24.479852,21.831180
+30107,-160.274297,189.598719,9.900113
+30108,-183.996811,160.422750,11.347805
+30207,-158.548844,188.193931,9.944614
+30208,-182.226807,159.006140,11.370700
+30307,-156.823388,186.789141,9.989116
+30308,-180.460137,157.592198,11.393558
+30409,-134.519488,19.814194,14.510058
+30410,-174.951412,29.678425,13.515138
+30509,-134.231357,21.455766,14.519178
+30510,-174.512409,31.944622,13.405179
+30609,-133.943226,23.097338,14.528187
+30610,-173.080387,34.609501,13.276184
+30709,-133.655094,24.738910,14.537085
+30710,-171.648364,37.274379,13.147280
+30809,-89.103146,12.860558,15.807014
+30810,-133.777560,21.033299,14.532336
+30909,-88.675455,15.297335,15.856700
+30910,-133.316320,23.661125,14.548480
+40109,-85.058225,34.168599,20.250050
+40110,-128.208025,46.235735,19.330732
+40209,-84.441978,36.376855,20.296113
+40210,-127.534753,48.465421,19.340798
+40309,-83.825738,38.585088,20.342176
+40310,-126.861482,50.695107,19.350877
+40408,-41.720930,22.049029,20.464279
+40508,-41.114408,24.222424,20.509408
+40608,-40.507920,26.395695,20.554534
+40708,1.808395,9.875756,20.007375
+40808,2.265705,12.053253,20.053040
+40908,2.723014,14.230750,20.098713
+41009,40.449132,-2.488666,19.937900
+41010,1.881282,7.692791,19.960102
+41109,41.051869,0.170268,19.991443
+41110,2.553111,10.891732,20.027138
+41209,41.654461,2.828763,20.044985
+41210,3.224940,14.090673,20.094190
+41308,79.225493,-12.725167,20.530837
+41408,79.742010,-10.604494,20.572856
+41508,80.258374,-8.484254,20.614867
+41608,117.726920,-22.889089,21.722552
+41708,118.141549,-21.298326,21.754437
+41808,118.556177,-19.707563,21.786321
+50108,-45.757389,0.291667,16.974954
+50208,-45.328774,2.532812,17.020590
+50308,-44.900144,4.774058,17.066228
+50408,-44.471500,7.015404,17.111868
+50508,-1.811362,-7.359864,18.250460
+50608,-1.381462,-5.312881,18.292302
+50708,-0.951563,-3.265899,18.334143
+50808,-0.521664,-1.218917,18.375985
+50909,37.264147,-16.535854,19.372552
+50910,-1.302458,-7.466716,18.265064
+51009,37.726532,-14.496562,19.414374
+51010,-0.872565,-5.419761,18.306892
+51109,38.188918,-12.457270,19.456196
+51110,-0.442672,-3.372806,18.348722
+51209,38.651304,-10.417977,19.498017
+51210,-0.012778,-1.325852,18.390551
+51308,76.073933,-25.662179,20.567427
+51408,76.568845,-23.630557,20.609247
+51508,77.063757,-21.598934,20.651068
+51608,77.558669,-19.567312,20.692888
+51708,114.640291,-34.731260,21.846727
+51808,115.167823,-32.707330,21.888565
+51908,115.695355,-30.683400,21.930405
+52008,116.222887,-28.659470,21.972244
+*NL-LINK
+ 1, 10107, 10106, HDR720, , 0, 0, 
+ 2, 10108, 10100, HDR720, , 0, 0, 
+ 3, 10207, 10206, HDR720, , 0, 0, 
+ 4, 10208, 10200, HDR720, , 0, 0, 
+ 5, 10307, 10306, HDR720, , 0, 0, 
+ 6, 10308, 10300, HDR720, , 0, 0, 
+ 7, 10409, 10408, HDR720, , 0, 0, 
+ 8, 10410, 10400, HDR720, , 0, 0, 
+ 9, 10509, 10508, HDR720, , 0, 0, 
+ 10, 10510, 10500, HDR720, , 0, 0, 
+ 11, 10609, 10608, HDR720, , 0, 0, 
+ 12, 10610, 10600, HDR720, , 0, 0, 
+ 13, 10709, 10708, HDR720, , 0, 0, 
+ 14, 10710, 10700, HDR720, , 0, 0, 
+ 15, 10809, 10808, HDR720, , 0, 0, 
+ 16, 10810, 10800, HDR720, , 0, 0, 
+ 17, 20107, 20106, HDR720, , 0, 0, 
+ 18, 20108, 20100, HDR720, , 0, 0, 
+ 19, 20207, 20206, HDR720, , 0, 0, 
+ 20, 20208, 20200, HDR720, , 0, 0, 
+ 21, 20307, 20306, HDR720, , 0, 0, 
+ 22, 20308, 20300, HDR720, , 0, 0, 
+ 23, 20407, 20406, HDR720, , 0, 0, 
+ 24, 20408, 20400, HDR720, , 0, 0, 
+ 25, 20507, 20506, HDR720, , 0, 0, 
+ 26, 20508, 20500, HDR720, , 0, 0, 
+ 27, 20607, 20606, HDR720, , 0, 0, 
+ 28, 20608, 20600, HDR720, , 0, 0, 
+ 29, 20708, 20707, HDR720, , 0, 0, 
+ 30, 20808, 20807, HDR720, , 0, 0, 
+ 31, 20908, 20907, HDR720, , 0, 0, 
+ 32, 21008, 21007, HDR720, , 0, 0, 
+ 33, 21108, 21107, HDR720, , 0, 0, 
+ 34, 21208, 21207, HDR720, , 0, 0, 
+ 35, 21308, 21307, HDR720, , 0, 0, 
+ 36, 21408, 21407, HDR720, , 0, 0, 
+ 37, 21508, 21507, HDR720, , 0, 0, 
+ 38, 21609, 21608, HDR720, , 0, 0, 
+ 39, 21610, 21600, HDR720, , 0, 0, 
+ 40, 21709, 21708, HDR720, , 0, 0, 
+ 41, 21710, 21700, HDR720, , 0, 0, 
+ 42, 21808, 21807, HDR720, , 0, 0, 
+ 43, 21908, 21907, HDR720, , 0, 0, 
+ 44, 22008, 22007, HDR720, , 0, 0, 
+ 45, 22108, 22107, HDR720, , 0, 0, 
+ 46, 30107, 30106, HDR720, , 0, 0, 
+ 47, 30108, 30100, HDR720, , 0, 0, 
+ 48, 30207, 30206, HDR720, , 0, 0, 
+ 49, 30208, 30200, HDR720, , 0, 0, 
+ 50, 30307, 30306, HDR720, , 0, 0, 
+ 51, 30308, 30300, HDR720, , 0, 0, 
+ 52, 30409, 30408, HDR720, , 0, 0, 
+ 53, 30410, 30400, HDR720, , 0, 0, 
+ 54, 30509, 30508, HDR720, , 0, 0, 
+ 55, 30510, 30500, HDR720, , 0, 0, 
+ 56, 30609, 30608, HDR720, , 0, 0, 
+ 57, 30610, 30600, HDR720, , 0, 0, 
+ 58, 30709, 30708, HDR720, , 0, 0, 
+ 59, 30710, 30700, HDR720, , 0, 0, 
+ 60, 30809, 30808, HDR720, , 0, 0, 
+ 61, 30810, 30800, HDR720, , 0, 0, 
+ 62, 30909, 30908, HDR720, , 0, 0, 
+ 63, 30910, 30900, HDR720, , 0, 0, 
+ 64, 40109, 40108, HDR720, , 0, 0, 
+ 65, 40110, 40100, HDR720, , 0, 0, 
+ 66, 40209, 40208, HDR720, , 0, 0, 
+ 67, 40210, 40200, HDR720, , 0, 0, 
+ 68, 40309, 40308, HDR720, , 0, 0, 
+ 69, 40310, 40300, HDR720, , 0, 0, 
+ 70, 40408, 40407, HDR720, , 0, 0, 
+ 71, 40508, 40507, HDR720, , 0, 0, 
+ 72, 40608, 40607, HDR720, , 0, 0, 
+ 73, 40708, 40707, HDR720, , 0, 0, 
+ 74, 40808, 40807, HDR720, , 0, 0, 
+ 75, 40908, 40907, HDR720, , 0, 0, 
+ 76, 41009, 41008, HDR720, , 0, 0, 
+ 77, 41010, 41000, HDR720, , 0, 0, 
+ 78, 41109, 41108, HDR720, , 0, 0, 
+ 79, 41110, 41100, HDR720, , 0, 0, 
+ 80, 41209, 41208, HDR720, , 0, 0, 
+ 81, 41210, 41200, HDR720, , 0, 0, 
+ 82, 41308, 41307, HDR720, , 0, 0, 
+ 83, 41408, 41407, HDR720, , 0, 0, 
+ 84, 41508, 41507, HDR720, , 0, 0, 
+ 85, 41608, 41607, HDR720, , 0, 0, 
+ 86, 41708, 41707, HDR720, , 0, 0, 
+ 87, 41808, 41807, HDR720, , 0, 0, 
+ 88, 50108, 50107, HDR720, , 0, 0, 
+ 89, 50208, 50207, HDR720, , 0, 0, 
+ 90, 50308, 50307, HDR720, , 0, 0, 
+ 91, 50408, 50407, HDR720, , 0, 0, 
+ 92, 50508, 50507, HDR720, , 0, 0, 
+ 93, 50608, 50607, HDR720, , 0, 0, 
+ 94, 50708, 50707, HDR720, , 0, 0, 
+ 95, 50808, 50807, HDR720, , 0, 0, 
+ 96, 50909, 50908, HDR720, , 0, 0, 
+ 97, 50910, 50900, HDR720, , 0, 0, 
+ 98, 51009, 51008, HDR720, , 0, 0, 
+ 99, 51010, 51000, HDR720, , 0, 0, 
+ 100, 51109, 51108, HDR720, , 0, 0, 
+ 101, 51110, 51100, HDR720, , 0, 0, 
+ 102, 51209, 51208, HDR720, , 0, 0, 
+ 103, 51210, 51200, HDR720, , 0, 0, 
+ 104, 51308, 51307, HDR720, , 0, 0, 
+ 105, 51408, 51407, HDR720, , 0, 0, 
+ 106, 51508, 51507, HDR720, , 0, 0, 
+ 107, 51608, 51607, HDR720, , 0, 0, 
+ 108, 51708, 51707, HDR720, , 0, 0, 
+ 109, 51808, 51807, HDR720, , 0, 0, 
+ 110, 51908, 51907, HDR720, , 0, 0, 
+ 111, 52008, 52007, HDR720, , 0, 0, 
+*CONSTRAINT
+10107, 111111,
+10108, 111111,
+10207, 111111,
+10208, 111111,
+10307, 111111,
+10308, 111111,
+10409, 111111,
+10410, 111111,
+10509, 111111,
+10510, 111111,
+10609, 111111,
+10610, 111111,
+10709, 111111,
+10710, 111111,
+10809, 111111,
+10810, 111111,
+20107, 111111,
+20108, 111111,
+20207, 111111,
+20208, 111111,
+20307, 111111,
+20308, 111111,
+20407, 111111,
+20408, 111111,
+20507, 111111,
+20508, 111111,
+20607, 111111,
+20608, 111111,
+20708, 111111,
+20808, 111111,
+20908, 111111,
+21008, 111111,
+21108, 111111,
+21208, 111111,
+21308, 111111,
+21408, 111111,
+21508, 111111,
+21609, 111111,
+21610, 111111,
+21709, 111111,
+21710, 111111,
+21808, 111111,
+21908, 111111,
+22008, 111111,
+22108, 111111,
+30107, 111111,
+30108, 111111,
+30207, 111111,
+30208, 111111,
+30307, 111111,
+30308, 111111,
+30409, 111111,
+30410, 111111,
+30509, 111111,
+30510, 111111,
+30609, 111111,
+30610, 111111,
+30709, 111111,
+30710, 111111,
+30809, 111111,
+30810, 111111,
+30909, 111111,
+30910, 111111,
+40109, 111111,
+40110, 111111,
+40209, 111111,
+40210, 111111,
+40309, 111111,
+40310, 111111,
+40408, 111111,
+40508, 111111,
+40608, 111111,
+40708, 111111,
+40808, 111111,
+40908, 111111,
+41009, 111111,
+41010, 111111,
+41109, 111111,
+41110, 111111,
+41209, 111111,
+41210, 111111,
+41308, 111111,
+41408, 111111,
+41508, 111111,
+41608, 111111,
+41708, 111111,
+41808, 111111,
+50108, 111111,
+50208, 111111,
+50308, 111111,
+50408, 111111,
+50508, 111111,
+50608, 111111,
+50708, 111111,
+50808, 111111,
+50909, 111111,
+50910, 111111,
+51009, 111111,
+51010, 111111,
+51109, 111111,
+51110, 111111,
+51209, 111111,
+51210, 111111,
+51308, 111111,
+51408, 111111,
+51508, 111111,
+51608, 111111,
+51708, 111111,
+51808, 111111,
+51908, 111111,
+52008, 111111,
